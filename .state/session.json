@@ -1,18 +1,17 @@
 {
   "schema": 1,
   "project": "lab-management-system-django",
-  "current_task": "REQ-2026-029 已收官；本窗口完成 5.127① git init + submodule 注册（suite b34d425），strict codegen 转真",
+  "current_task": "REQ-2026-030 已收官（初取 029 撞 saas-angular 已改 030）；5.127① git init + submodule 注册完成（suite b34d425），strict codegen 转真",
   "done": [
-    "REQ-2026-029：M02.F01 五 op 落地（decode-only auth + 401 信封 handler + 1-based 分页切片 + 租户收口 + keyword/status 过滤 + 23505→400），24 tests 全绿，红灯证据 20 failed 在案",
+    "REQ-2026-030：M02.F01 五 op 落地（decode-only auth + 401 信封 handler + 1-based 分页切片 + 租户收口 + keyword/status 过滤 + 23505→400），24 tests 全绿，红灯证据 20 failed 在案",
     "codegen 管线：gen-shared.sh（'=' 键 sanitize 落 _work/ + datamodel-codegen modular 目录输出）+ gen-manifest.py；生成区 src/lab_management_system_django/contract/models/ + generated/api_manifest.json",
     "树：M02.F01 + I01-I05 镜像登记→开发中（mirror 免批双令牌已焚）；trace.json 24 tests / 19 fn",
     "5.127① 收官（2026-11-01）：GitHub 双仓已建（public 同兄弟仓，存储凭据 API 创建），本仓 master 已推，suite b34d425 登记 gitlink + .gitmodules（branch=master），strict codegen SKIP→真 PASS（本仓 3 files idempotent），注册后全门复跑 exit 0",
     ".gitignore 对齐家族口径：session.json/tree-change.applied.json 入库，tree-change.json 不入",
     "遗留项入 tracker：docs/superpowers/plans/2026-09-18-family-leftovers-remediation.md 5.127（①已勾，②③④挂账）"
   ],
-  "next": "CT TARGETS 注册（django=5213）随 live 里程碑批（tracker 5.127②，全 CRUD 已覆盖 CT 测试面）；REQ-2026-029 编号留人核——suite 20e7eab 已把「REQ-2026-029」给了 saas-angular，取号可能要跳 029",
+  "next": "CT TARGETS 注册（django=5213）随 live 里程碑批（tracker 5.127②，全 CRUD 已覆盖 CT 测试面）；shared @doc 陈旧描述更新须人批（5.127③）",
   "open_questions": [
-    "REQ 编号 029 留人核：suite 20e7eab 已把 029 用在 saas-angular 上，本仓 REQ 可能须改 030",
     "shared 契约 lab contracts @doc「仅回显不切片」陈旧描述更新须人批（CT T11 已实证 1-based）",
     "CT TARGETS 注册（django=5213）随 live 里程碑批（tracker 5.124/5.127②）"
   ],

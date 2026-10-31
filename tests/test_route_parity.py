@@ -17,7 +17,7 @@ MANIFEST = json.loads(
     )
 )
 
-# 本切片（REQ-2026-029）：契约路径 -> 功能子项
+# 本切片（REQ-2026-030）：契约路径 -> 功能子项
 SLICE = {
     "GET /api/contracts": "M02.F01.I01",
     "POST /api/contracts": "M02.F01.I03",

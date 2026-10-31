@@ -1,4 +1,4 @@
-# REQ-2026-029 lab-django 合同管理首切片（M02.F01 全 CRUD 五 op）
+# REQ-2026-030 lab-django 合同管理首切片（M02.F01 全 CRUD 五 op）
 
 | 项 | 值 |
 |---|---|
@@ -19,7 +19,7 @@
 | 疑问 | 澄清结论 | 澄清人 | 日期 |
 |---|---|---|---|
 | 选项写「M04 合同 CRUD」，合同在 M04 吗？ | 否——功能树 SSOT 合同管理=M02.F01（M04 是 F06-F09 码表）；按树实现 M02.F01，「M04」是选项标注笔误 | Claude 树核时确认，留人核 | 2026-10-31 |
-| REQ 编号 029 从哪来？ | 主系列 suite 全局顺延（最高 REQ-2026-028=saas-django 租户首切片，同日同会话） | Claude 推断，留人核 | 2026-10-31 |
+| REQ 编号怎么取？ | 初取 029 **撞号**（saas-angular `REQ-2026-029-angular-full-feature-sync` 在先，suite commit 20e7eab 即其 T-3），2026-11-01 全家族扫证后改取 **030**（主系列 027=angular 首航、028=saas-django、029=saas-angular 全量同步，030 空） | Claude 取号修正，留人核 | 2026-11-01 |
 | 分页语义按契约 @doc「不切片」还是 CT？ | 按 CT 仲裁：1-based（默认 page=1/pageSize=20，2026-09-16 T11 live 实证，nextjs oracle pageOf 切片）；契约 @doc「仅回显不切片」是陈旧描述（契约描述×生成器指纹在案），更新 shared 描述须人批，不在本 REQ | Claude 查 CT 与 oracle 时确认 | 2026-10-31 |
 | 鉴权按什么形状？ | decode-only 不验签（nextjs bearer.ts 只解 payload；aspnetcore 才验签）+ tenant_id claim 必需，缺失/无效 401 信封 `{code:"UNAUTHORIZED",message:"tenant_id claim is required (ADR-0019)"}`（ADR-0019，禁 demo 字面量兜底） | Claude 查 require-tenant/bearer.ts 时确认 | 2026-10-31 |
 

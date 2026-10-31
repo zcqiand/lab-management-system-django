@@ -1,4 +1,4 @@
-# design-function-map（REQ-2026-029 首切片）
+# design-function-map（REQ-2026-030 首切片）
 
 | 功能 ID | 端点（契约 SSOT） | 接口/表 | 说明 |
 |---|---|---|---|

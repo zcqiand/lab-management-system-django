@@ -1,4 +1,4 @@
-"""M02.F01 合同管理首切片（REQ-2026-029，T-4）——I01-I05 行为单测。
+"""M02.F01 合同管理首切片（REQ-2026-030，T-4）——I01-I05 行为单测。
 
 契约 SSOT：shared emit openapi（scripts/gen-shared.sh 生成区）。
 语义仲裁（docs/design/design-function-map.md「关键语义分叉」）：
