@@ -1,0 +1,24 @@
+__pycache__/
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+.env*.local
+*.sqlite3
+db.sqlite3
+# .state 运行产物（可再生，不入库）；session.json 与 tree-change.applied.json 是台账，入库
+.state/trace.json
+.state/gate.json
+.state/gate.partial.json
+.state/alignment.json
+.state/tree-change.json
+!/.state/tree-change.applied.json
+
+# Claude 临时文件
+.claude/
+.superpowers/
+.mcp.json
+
+# 可再生件（正式区/临时区纪律：过程件进 _work/，_work 整体不入库；2026-10-24 人裁，2026-10-30 全适配器补齐）
+_work/

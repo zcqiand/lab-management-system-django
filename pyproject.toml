@@ -1,0 +1,58 @@
+[project]
+name = "lab-management-system-django"
+version = "0.1.0"
+description = "实验室管理 Django 版"
+requires-python = ">=3.11"
+dependencies = [
+    "Django>=5.0,<6",
+    "djangorestframework>=3.15",
+    "dj-database-url>=2.1",
+]
+
+[project.optional-dependencies]
+# ruff/mypy 本体不在这里：suite 在 gate.py 钉版（RUFF_PINNED_VERSION），走全局工具链，
+# 项目依赖装新版会在 venv 激活时遮蔽钉版导致 [RUFF-PIN] exit 2。
+# 但 mypy 的 Django/DRF 插件（django-stubs）必须与被检查代码同环境 —— 与 runtime 依赖
+# 一起装全局 python（anaconda），与 fastapi 仓「依赖进全局」先例一致。
+dev = [
+    "pytest>=8",
+    "pytest-django>=4.8",
+    "django-stubs[compatible-mypy]>=5.1",
+    "djangorestframework-stubs[compatible-mypy]>=3.15",
+    "datamodel-code-generator==0.87.0",
+    "PyYAML==6.0.3",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-exclude = ["src/lab_management_system_django/contract"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP", "B", "SIM", "ARG", "PTH", "DJ"]
+
+[tool.ruff.lint.flake8-unused-arguments]
+# DRF/Django 框架覆写（create/list 的 *args/**kwargs）按签名要求收参但不使用
+ignore-variadic-names = true
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+mypy_path = "src"
+plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
+exclude = "src/lab_management_system_django/contract/"
+
+[[tool.mypy.overrides]]
+module = "lab_management_system_django.contract.models"
+follow_imports = "skip"
+ignore_errors = true
+
+[tool.django-stubs]
+django_settings_module = "config.settings"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+DJANGO_SETTINGS_MODULE = "config.settings"
+# 家族测试库只 ensure_connection 不建 django contrib 表（禁第 4 类库，见 tests/conftest.py）
+addopts = "--no-migrations"

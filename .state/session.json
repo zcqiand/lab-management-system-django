@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "project": "lab-management-system-django",
+  "current_task": "REQ-2026-029 合同管理首切片（M02.F01 I01-I05 全 CRUD）已收官，全门 L0-L5 绿",
+  "done": [
+    "REQ-2026-029：M02.F01 五 op 落地（decode-only auth + 401 信封 handler + 1-based 分页切片 + 租户收口 + keyword/status 过滤 + 23505→400），24 tests 全绿，红灯证据 20 failed 在案",
+    "codegen 管线：gen-shared.sh（'=' 键 sanitize 落 _work/ + datamodel-codegen modular 目录输出）+ gen-manifest.py；生成区 src/lab_management_system_django/contract/models/ + generated/api_manifest.json",
+    "树：M02.F01 + I01-I05 镜像登记→开发中（mirror 免批双令牌已焚）；trace.json 24 tests / 19 fn",
+    "suite：check_codegen_idempotent.py django 检测分支已接线（marker=datamodel-codegen，双区 out_rels，未 git init strict SKIP）；mold/profiles/codegen.md django 行标已接线",
+    "遗留项入 tracker：docs/superpowers/plans/2026-09-18-family-leftovers-remediation.md 5.127"
+  ],
+  "next": "gate.py --all 收工验证后（进行中）；下一步=用户侧 git init + submodule 注册本仓（5.127①），注册后复跑 codegen.idempotent --strict 核真检查转绿",
+  "open_questions": [
+    "REQ 编号 029 留人核（suite 全局顺延取号）",
+    "shared 契约 lab contracts @doc「仅回显不切片」陈旧描述更新须人批（CT T11 已实证 1-based）",
+    "CT TARGETS 注册（django=5213）随 live 里程碑批（tracker 5.124/5.127②）"
+  ],
+  "dont": [
+    "不要改 .harness/stack.json 让门变松",
+    "不要给 skip 的测试挂功能 ID",
+    "不要 pip install -e .（config 顶层包双仓 sys.path 撞名）；依赖装全局 python",
+    "不要给 src/ 放 __init__.py（只允许仓身份包目录内有）",
+    "可空列必须 null=True：Model.__init__ 对非 null 文本字段缺省填 ''，空串撞 contracts_specialty_fk（25203）",
+    "pytest 裸跑必须带 -p env_bootstrap（settings fail-fast 早于 conftest）",
+    "分页别照 saas 0 基抄：lab 家族 1-based（CT T11 仲裁）"
+  ],
+  "last_gate_passed_at": "2026-10-31"
+}

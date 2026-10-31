@@ -1,0 +1,76 @@
+{
+  "schema": 1,
+  "suite_version": "0.6.0",
+  "project": "lab-management-system-django",
+  "stack": "django",
+  "gates": {
+    "L1": {
+      "name": "格式",
+      "cmd": [
+        "ruff",
+        "format",
+        "--check",
+        "src",
+        "tests",
+        "manage.py"
+      ],
+      "fix": "运行 `ruff format src tests manage.py` 后重试。"
+    },
+    "L2": {
+      "name": "静态检查",
+      "cmd": [
+        "ruff",
+        "check",
+        "src",
+        "tests",
+        "manage.py"
+      ],
+      "fix": "逐条修复 ruff。禁止 `# noqa` 掩盖，除非同行注释给出理由。"
+    },
+    "L3": {
+      "name": "类型",
+      "cmd": [
+        "python",
+        "scripts/mypy-django.py",
+        "--strict",
+        "src"
+      ],
+      "fix": "补全类型标注。禁止 Any / type: ignore 绕过，除非附 ADR 说明。mypy 插件（django-stubs）走项目 dev 依赖，装全局 python（suite 钉版工具链同源）。L3 经 scripts/mypy-django.py 包装器：django-stubs 插件启动即真实 import settings，fail-fast 无兜底，故包装器先把 .env.test（已入库测试夹具）灌进环境再进 mypy。"
+    },
+    "L4": {
+      "name": "测试",
+      "cmd": [
+        "python",
+        "-m",
+        "pytest",
+        "-q",
+        "--tb=short",
+        "-p",
+        "env_bootstrap"
+      ],
+      "fix": "先让测试变绿，再谈重构。测试客户端用 DRF APIClient（pytest-django pytest.mark.django_db 控库），不起真端口。"
+    }
+  },
+  "trace_cmd": [
+    "python",
+    "-m",
+    "pytest",
+    "--collect-only",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "-p",
+    "env_bootstrap",
+    "-m",
+    ""
+  ],
+  "trace_env": {
+    "TRACE_MAP": "1"
+  },
+  "source_dirs": [
+    "src"
+  ],
+  "test_dirs": [
+    "tests"
+  ]
+}
