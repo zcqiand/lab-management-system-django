@@ -7,7 +7,7 @@
   - 分页 1-based（CT contracts.test.ts T11 live 实证，page=1/pageSize=20 默认）
   - 列全 text，id/时间戳 app 侧生成（uuid4 + ISO NOW），status 字符串 active/archived
   - 租户身份只取 token 的 tenant_id claim（ADR-0019，body.tenantId 忽略）
-测试库 = 家族 lab_test（V015 seed：CONTRACT-001/002/003 全 TENANT-001），
+测试库 = 家族 lab_test（shared seed：CONTRACT-001/002/003，租户随种子行），
 写测试走 django_db 事务回滚，不污染共库。
 """
 
@@ -16,13 +16,36 @@ from __future__ import annotations
 import base64
 import json
 import uuid
+from pathlib import Path
 
 import pytest
 from rest_framework.test import APIClient
 
 LIST_URL = "/api/contracts"
 DEAD_ID = "00000000-0000-0000-0000-00000000dead"
-TENANT = "TENANT-001"
+
+# token 租户 claim 真源=shared 种子行（2026-11-02 5.129 同类第三处）：曾硬编码
+# "TENANT-001"，tenant_key 收口批（2026-11-01）种子迁 acme 后 claim×行租户错位
+# → 列表 total=0 → items[0] IndexError。种子不唯一则 fail-fast，禁回落字面量。
+_seed_tenants = sorted(
+    {
+        row["tenant_id"]
+        for row in json.loads(
+            (
+                Path(__file__).resolve().parents[2]
+                / "lab-management-system-shared"
+                / "seeds"
+                / "contracts.json"
+            ).read_text(encoding="utf-8")
+        )
+    }
+)
+if len(_seed_tenants) != 1 or not _seed_tenants[0]:
+    raise RuntimeError(
+        f"fail-fast: seeds/contracts.json tenant_id 不唯一或为空（{_seed_tenants}）"
+        "——token 租户 claim 无真源"
+    )
+TENANT = _seed_tenants[0]
 
 # nextjs oracle Row 形状（drizzle select() 全列 → camelCase JSON，含 tenantId）
 CONTRACT_FIELDS = {
@@ -175,7 +198,7 @@ def test_list_status_filter() -> None:
 def test_list_tenant_scoped_from_claim() -> None:
     resp = client(tenant="TENANT-OTHER").get(LIST_URL)
     assert resp.status_code == 200
-    assert resp.json()["total"] == 0  # seed 全 TENANT-001，别的租户看不到
+    assert resp.json()["total"] == 0  # seed 全单租户（真源见 TENANT 推导），别的租户看不到
 
 
 # ---------- I03 创建合同 ----------
