@@ -58,6 +58,12 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "config.urls"
 
+# DB-First 生成区（ADR-0025 家族裁定）：junction/复合键实体是 managed=False 的
+# legacy 多 primary_key=True 形（只映射既有表，Meta.pk 取首列），models.E026 是
+# 预期形态不是错误——runserver/migrate 系统检查静音（pytest-django 本就不跑检查，
+# T11 live 起服实锤）。查询路径全走 filter(全键)，禁 row.save()（design-map 分叉条）。
+SILENCED_SYSTEM_CHECKS = ["models.E026"]
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
