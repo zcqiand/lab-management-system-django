@@ -8,4 +8,5 @@ urlpatterns: list[URLPattern | URLResolver] = [
     path("api/", include("contracts.urls")),
     path("api/", include("authn.urls")),
     path("api/", include("inspection.urls")),
+    path("api/", include("receipts.urls")),
 ]

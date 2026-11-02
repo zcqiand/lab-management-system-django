@@ -20,7 +20,9 @@
 | M06.F02.I01-I10 | /api/inspection/objects(±/{code}) + links/specialty-object + links/object-parameter | inspection_objects / specialty_object_links / object_parameter_links | 项目 CRUD + 两 junction（object-parameter 的 qualification_level 入 PK、默认 QUALIFIED） |
 | M06.F03.I01-I06, I08 | /api/inspection/parameters(±/{code}) + links/standard-parameter | inspection_parameters / standard_parameter_links | 参数 CRUD（aliases jsonb）+ 标准↔参数 junction（纯键 PK） |
 | M06.F04.I01-I04 | /api/inspection/standards(±/{code}) | inspection_standards | 标准 CRUD（status: active/superseded/draft，默认 ACTIVE） |
-| M04.F06-F09.I01-I04 | /api/catalog/{models,specs,grades,brands}(±/{code}) | inspection_models/specs/grades/brands | 码表 4 实体同构 CRUD（16 op）：tenant 收口（claim 优先缺省 directory 默认租户 TENANT-001）、create=merge 全覆写（createdAt 刷新）、update=PATCH、回显域分页（items 全量，(sort_order, code) 排序）、他人租户行 404 隔离 |
+| M04.F06-F09.I01-I04 | /api/catalog/{models,specs,grades,brands}(±/{code}) | inspection_models/specs/grades/brands | 码表 4 实体同构 CRUD（16 op）：tenant 收口（claim 优先缺省 directory 默认租户 TENANT-001）、create=merge 全覆写（createdAt 刷新）、update=PATCH、回显域分页（items 全量，(sort_order, code) 排序）、他人租户行 404 境外不可见、DELETE miss 404 |
+
+| M03.F01-F08（接样单域 14 op） | /api/receipts(±/{id}±/{id}/history) + task + 七段 act | sample_receipts | rails 镜像（report_flow_service/sample_receipt_service 逐条）：tenant 收口、create=「R-<uuid>」+ flow_status=receiving + contract FK 校验 404、update=PATCH（LIST_FIELDS 跳 None + jsonb 三字段非 None 即 Array(v||[]) 标量包单元素数组）、list 回显信封（page??1/pageSize??20/total=len，updated_at desc + commission_code asc）、5.57 三态 filter、七段 act（operator 整批 400 先校验、per-id err 不整批 5xx、archived 仅 submit 自转移 audit、submit 写/withdraw 清/return 保留 lastSubmittedBy、history entry action/from/to/operator/reason/at）、DTO NON_NULL 递归（render_camel 镜像）、jsonb 键恒在（空时 []） |
 
 ## 与 saas 首切片的关键语义分叉（防跨家族串味）
 

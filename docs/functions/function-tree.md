@@ -113,14 +113,63 @@
 
 | 功能 ID | 功能名称 | 说明 | 状态 |
 |---|---|---|---|
-| M03.F01 | 接样管理 | 接样单 CRUD、报告类别关联、流程状态 | 规划 |
-| M03.F02 | 任务分配 | 接样提交后安排检测人员/计划日期，提交进入数据录入；任务字段挂 SampleReceipt | 规划 |
-| M03.F03 | 数据录入 | 样品检测数据录入 | 规划 |
-| M03.F05 | 报告审核 | 报告审核流程 | 规划 |
-| M03.F06 | 报告批准 | 报告批准流程 | 规划 |
-| M03.F07 | 报告发放 | 报告发放流程 | 规划 |
-| M03.F08 | 报告归档 | 报告归档流程 | 规划 |
+| M03.F01 | 接样管理 | 接样单 CRUD、报告类别关联、流程状态 | 开发中 |
+| M03.F02 | 任务分配 | 接样提交后安排检测人员/计划日期，提交进入数据录入；任务字段挂 SampleReceipt | 开发中 |
+| M03.F03 | 数据录入 | 样品检测数据录入 | 开发中 |
+| M03.F05 | 报告审核 | 报告审核流程 | 开发中 |
+| M03.F06 | 报告批准 | 报告批准流程 | 开发中 |
+| M03.F07 | 报告发放 | 报告发放流程 | 开发中 |
+| M03.F08 | 报告归档 | 报告归档流程 | 开发中 |
 | M03.F09 | 接样单详情 | 接样单查看（接样信息+样品信息+检测数据） | 规划 |
+
+### M03.F01 接样管理
+
+| 子项 ID | 名称 | 类型 | 交付 | 说明 | 状态 |
+|---|---|---|---|---|---|
+| M03.F01.I01 | 接样单列表 | 接口 | 前端+后端 | GET /api/receipts?contractId=&flowStatus=&keyword=：按 tenant 收口 + 3 过滤 | 开发中 |
+| M03.F01.I02 | 接样单详情 | 接口 | 前端+后端 | GET /api/receipts/{id}：返回 SampleReceipt（含 flow_history）；**shared-with: M03.F05.I02 / M03.F06.I02 / M03.F07.I02 / M03.F08.I02 / M03.F09.I01** | 开发中 |
+| M03.F01.I03 | 创建接样单 | 接口 | 前端+后端 | POST /api/receipts：contract_id FK 必存在；flow_status=receiving 起步；flow_history=[] | 开发中 |
+| M03.F01.I04 | 更新接样单 | 接口 | 前端+后端 | PUT /api/receipts/{id}：PATCH 语义 | 开发中 |
+| M03.F01.I05 | 删除接样单 | 接口 | 前端+后端 | DELETE /api/receipts/{id}：CASCADE 删除下属 samples | 开发中 |
+| M03.F01.I06 | 接样单流程历史 | 接口 | 前端+后端 | GET /api/receipts/{id}/history：返回 FlowHistoryEntry[]（jsonb 展开为 List） | 开发中 |
+| M03.F01.I08 | 接样-提交 | 接口 | 前端+后端 | POST /api/receipts/receiving/act，body.action={SUBMIT、RETURN、WITHDRAW} 三动作统一（2026-09-18：I09 退回/I10 撤回语义并入本行；RETURN 前置阶段退回无前置则 422、WITHDRAW 提交人撤回回到原阶段；7 阶段全 act 模式） | 开发中 |
+
+### M03.F02 任务分配
+
+| 子项 ID | 名称 | 类型 | 交付 | 说明 | 状态 |
+|---|---|---|---|---|---|
+| M03.F02.I01 | 任务分配 | 接口 | 前端+后端 | PUT /api/receipts/{id}/task：AssignTaskRequest 设 assigneeId/Name/plannedTestDate；非 receiving 阶段不自动 advance | 开发中 |
+| M03.F02.I05 | 任务分配-提交 | 接口 | 前端+后端 | POST /api/receipts/assigning/act，body.action={SUBMIT、RETURN、WITHDRAW} 三动作统一（2026-09-18：I06 退回/I07 撤回语义并入本行；RETURN 退回到 receiving；7 阶段全 act 模式） | 开发中 |
+
+### M03.F03 数据录入（T5 仅收 act 端点；samples/test-records CRUD 属 T6）
+
+| 子项 ID | 名称 | 类型 | 交付 | 说明 | 状态 |
+|---|---|---|---|---|---|
+| M03.F03.I12 | 数据录入-提交 | 接口 | 前端+后端 | POST /api/receipts/data-entry/act，body.action={SUBMIT、RETURN、WITHDRAW} 三动作统一（2026-09-18：I13 退回/I14 撤回语义并入本行；RETURN 退回到 assigning；7 阶段全 act 模式） | 开发中 |
+
+### M03.F05 报告审核
+
+| 子项 ID | 名称 | 类型 | 交付 | 说明 | 状态 |
+|---|---|---|---|---|---|
+| M03.F05.I07 | 报告审核-提交 | 接口 | 前端+后端 | POST /api/receipts/review/act，body.action={SUBMIT、RETURN、WITHDRAW} 三动作统一（2026-09-18：I08 退回/I09 撤回语义并入本行；4 阶段全 act 合并方案 B） | 开发中 |
+
+### M03.F06 报告批准
+
+| 子项 ID | 名称 | 类型 | 交付 | 说明 | 状态 |
+|---|---|---|---|---|---|
+| M03.F06.I05 | 报告批准-提交 | 接口 | 前端+后端 | POST /api/receipts/approve/act，body.action={SUBMIT、RETURN、WITHDRAW} 三动作统一（2026-09-18：I06 退回/I07 撤回语义并入本行；4 阶段全 act 合并方案 B） | 开发中 |
+
+### M03.F07 报告发放
+
+| 子项 ID | 名称 | 类型 | 交付 | 说明 | 状态 |
+|---|---|---|---|---|---|
+| M03.F07.I05 | 报告发放-提交 | 接口 | 前端+后端 | POST /api/receipts/issuance/act，body.action={SUBMIT、RETURN、WITHDRAW} 三动作统一（2026-09-18：I06 退回/I07 撤回语义并入本行；4 阶段全 act 合并方案 B） | 开发中 |
+
+### M03.F08 报告归档
+
+| 子项 ID | 名称 | 类型 | 交付 | 说明 | 状态 |
+|---|---|---|---|---|---|
+| M03.F08.I05 | 报告归档-提交 | 接口 | 前端+后端 | POST /api/receipts/archived/act，body.action={SUBMIT、RETURN、WITHDRAW} 三动作统一（2026-09-18：I06 退回/I07 撤回语义并入本行；4 阶段全 act 合并方案 B） | 开发中 |
 
 
 ## M04 基础数据

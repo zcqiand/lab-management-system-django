@@ -35,6 +35,21 @@ SLICE = {
     "POST /api/auth/switch-tenant": "M00.F02.I01",
     "GET /api/auth/sso/authorize": "M01.F05.I02",
     "POST /api/auth/sso/callback": "M01.F05.I03",
+    # T5 接样单域 14 op（CRUD 5 + history + task + 七段 act；rails 同款 stage 映射）
+    "GET /api/receipts": "M03.F01.I01",
+    "POST /api/receipts": "M03.F01.I03",
+    "GET /api/receipts/{id}": "M03.F01.I02",
+    "PUT /api/receipts/{id}": "M03.F01.I04",
+    "DELETE /api/receipts/{id}": "M03.F01.I05",
+    "GET /api/receipts/{id}/history": "M03.F01.I06",
+    "PUT /api/receipts/{id}/task": "M03.F02.I01",
+    "POST /api/receipts/receiving/act": "M03.F01.I08",
+    "POST /api/receipts/assigning/act": "M03.F02.I05",
+    "POST /api/receipts/data-entry/act": "M03.F03.I12",
+    "POST /api/receipts/review/act": "M03.F05.I07",
+    "POST /api/receipts/approve/act": "M03.F06.I05",
+    "POST /api/receipts/issuance/act": "M03.F07.I05",
+    "POST /api/receipts/archived/act": "M03.F08.I05",
     # T4 基础数据码表域 16 op（4 实体同构 CRUD）
     "GET /api/catalog/brands": "M04.F09.I01",
     "POST /api/catalog/brands": "M04.F09.I02",
@@ -96,6 +111,7 @@ def _normalize(route: str) -> str:
     return (
         ("/" + route)
         .replace("<str:contract_id>", "{id}")
+        .replace("<str:receipt_id>", "{id}")
         .replace("<str:code>", "{code}")
         .rstrip("/")
     )

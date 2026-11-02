@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "entities",
     "authn",
     "inspection",
+    "receipts",
 ]
 
 MIDDLEWARE = [
