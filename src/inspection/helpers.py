@@ -30,9 +30,8 @@ def now_iso() -> str:
     return datetime.now(UTC).isoformat()
 
 
-def require_login(request: HttpRequest) -> None:
-    """decode-only bearer：Bearer 三段可解析 payload 即过；缺/坏 → 401
-    INVALID_CREDENTIALS（fastapi require_bearer 的 django decode-only 镜像）。"""
+def _decode_claims(request: HttpRequest) -> dict[str, Any]:
+    """decode-only bearer 三段解析；缺/坏 → 401 INVALID_CREDENTIALS。"""
     header = request.headers.get("Authorization", "")
     if not header.startswith("Bearer "):
         raise InvalidCredentialsError("Bearer token required")
@@ -45,6 +44,37 @@ def require_login(request: HttpRequest) -> None:
         raise InvalidCredentialsError("Bearer token required") from None
     if not isinstance(payload, dict):
         raise InvalidCredentialsError("Bearer token required")
+    return payload
+
+
+def require_login(request: HttpRequest) -> None:
+    """decode-only bearer：Bearer 三段可解析 payload 即过（不取 claims）。"""
+    _decode_claims(request)
+
+
+def require_login_claims(request: HttpRequest) -> dict[str, Any]:
+    """decode-only bearer + 返回 payload（码表 tenant 收口取 tenant_id claim 用）。"""
+    return _decode_claims(request)
+
+
+def current_tenant_or_default(claims: dict[str, Any]) -> str:
+    """springboot currentTenantIdOrDefault 镜像：claim tenant_id 非空用之，否则
+    directory 默认租户（TENANT-001 业务码，非 env fallback——fastapi 2026-10-01
+    CT live 修正同款）。"""
+    claim = claims.get("tenant_id")
+    if claim is not None and str(claim).strip():
+        return str(claim)
+    from authn.state import registry
+
+    return registry().directory.default_tenant().tenant_id
+
+
+def scoped_row_or_404(model: type[Any], code: str, tenant: str, label: str) -> Any:
+    """findByTenantIdAndCode 镜像：他人租户行 miss → 404（隔离语义）。"""
+    row = model.objects.filter(code=code).first()
+    if row is None or row.tenant_id != tenant:
+        raise NotFoundError(f"{label} not found: {code}")
+    return row
 
 
 def keyword_hit(keyword: str | None, code: str, name: str) -> bool:

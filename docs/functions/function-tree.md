@@ -127,10 +127,46 @@
 
 | 功能 ID | 功能名称 | 说明 | 状态 |
 |---|---|---|---|
-| M04.F06 | 型号维护 | InspectionModel 实体码表维护，列表按检测专项过滤 | 规划 |
-| M04.F07 | 规格维护 | InspectionSpec 实体码表维护，列表按检测专项过滤 | 规划 |
-| M04.F08 | 等级维护 | InspectionGrade 实体码表维护，列表按检测专项过滤 | 规划 |
-| M04.F09 | 牌号维护 | InspectionBrand 实体码表维护，列表按检测专项过滤 | 规划 |
+| M04.F06 | 型号维护 | InspectionModel 实体码表维护，列表按检测专项过滤 | 开发中 |
+| M04.F07 | 规格维护 | InspectionSpec 实体码表维护，列表按检测专项过滤 | 开发中 |
+| M04.F08 | 等级维护 | InspectionGrade 实体码表维护，列表按检测专项过滤 | 开发中 |
+| M04.F09 | 牌号维护 | InspectionBrand 实体码表维护，列表按检测专项过滤 | 开发中 |
+
+### M04.F06 型号维护
+
+| 子项 ID | 名称 | 类型 | 交付 | 说明 | 状态 |
+|---|---|---|---|---|---|
+| M04.F06.I01 | 型号列表 | 接口 | 前端+后端 | GET /api/catalog/models?page=&pageSize=&inspectionObjectCode=&keyword=：`Page<InspectionModel>`，按 tenant 收口 + 2 过滤 | 开发中 |
+| M04.F06.I02 | 创建型号 | 接口 | 前端+后端 | POST /api/catalog/models：body CreateCatalogEntryRequest（code/name 必填 + 可选 inspectionObjectCode/remark/sortOrder），返回 InspectionModel | 开发中 |
+| M04.F06.I03 | 更新型号 | 接口 | 前端+后端 | PUT /api/catalog/models/{code}：body UpdateCatalogEntryRequest（PATCH 语义，未传字段保留），404 if 不存在 | 开发中 |
+| M04.F06.I04 | 删除型号 | 接口 | 前端+后端 | DELETE /api/catalog/models/{code}：204；FK 被 technical_requirements.model 引用时 DB SET NULL | 开发中 |
+
+### M04.F07 规格维护
+
+| 子项 ID | 名称 | 类型 | 交付 | 说明 | 状态 |
+|---|---|---|---|---|---|
+| M04.F07.I01 | 规格列表 | 接口 | 前端+后端 | GET /api/catalog/specs?page=&pageSize=&inspectionObjectCode=&keyword=：`Page<InspectionSpec>` | 开发中 |
+| M04.F07.I02 | 创建规格 | 接口 | 前端+后端 | POST /api/catalog/specs | 开发中 |
+| M04.F07.I03 | 更新规格 | 接口 | 前端+后端 | PUT /api/catalog/specs/{code} | 开发中 |
+| M04.F07.I04 | 删除规格 | 接口 | 前端+后端 | DELETE /api/catalog/specs/{code} | 开发中 |
+
+### M04.F08 等级维护
+
+| 子项 ID | 名称 | 类型 | 交付 | 说明 | 状态 |
+|---|---|---|---|---|---|
+| M04.F08.I01 | 等级列表 | 接口 | 前端+后端 | GET /api/catalog/grades?page=&pageSize=&inspectionObjectCode=&keyword=：`Page<InspectionGrade>` | 开发中 |
+| M04.F08.I02 | 创建等级 | 接口 | 前端+后端 | POST /api/catalog/grades | 开发中 |
+| M04.F08.I03 | 更新等级 | 接口 | 前端+后端 | PUT /api/catalog/grades/{code} | 开发中 |
+| M04.F08.I04 | 删除等级 | 接口 | 前端+后端 | DELETE /api/catalog/grades/{code} | 开发中 |
+
+### M04.F09 牌号维护
+
+| 子项 ID | 名称 | 类型 | 交付 | 说明 | 状态 |
+|---|---|---|---|---|---|
+| M04.F09.I01 | 牌号列表 | 接口 | 前端+后端 | GET /api/catalog/brands?page=&pageSize=&inspectionObjectCode=&keyword=：`Page<InspectionBrand>` | 开发中 |
+| M04.F09.I02 | 创建牌号 | 接口 | 前端+后端 | POST /api/catalog/brands | 开发中 |
+| M04.F09.I03 | 更新牌号 | 接口 | 前端+后端 | PUT /api/catalog/brands/{code} | 开发中 |
+| M04.F09.I04 | 删除牌号 | 接口 | 前端+后端 | DELETE /api/catalog/brands/{code} | 开发中 |
 
 
 ## M05 数据统计

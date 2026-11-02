@@ -5,9 +5,18 @@ from __future__ import annotations
 
 from django.urls import path
 
-from inspection import views
+from inspection import catalog_views, views
 
 urlpatterns = [
+    # 基础数据码表 M04.F06-F09（4 实体同构 CRUD，16 op）
+    path("catalog/brands", catalog_views.catalog_brands),
+    path("catalog/brands/<str:code>", catalog_views.catalog_brand_detail),
+    path("catalog/grades", catalog_views.catalog_grades),
+    path("catalog/grades/<str:code>", catalog_views.catalog_grade_detail),
+    path("catalog/models", catalog_views.catalog_models),
+    path("catalog/models/<str:code>", catalog_views.catalog_model_detail),
+    path("catalog/specs", catalog_views.catalog_specs),
+    path("catalog/specs/<str:code>", catalog_views.catalog_spec_detail),
     # 专项 M06.F01.I01-I04
     path("inspection/specialties", views.specialties),
     path("inspection/specialties/<str:code>", views.specialty_detail),

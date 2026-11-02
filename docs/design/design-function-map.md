@@ -20,6 +20,7 @@
 | M06.F02.I01-I10 | /api/inspection/objects(±/{code}) + links/specialty-object + links/object-parameter | inspection_objects / specialty_object_links / object_parameter_links | 项目 CRUD + 两 junction（object-parameter 的 qualification_level 入 PK、默认 QUALIFIED） |
 | M06.F03.I01-I06, I08 | /api/inspection/parameters(±/{code}) + links/standard-parameter | inspection_parameters / standard_parameter_links | 参数 CRUD（aliases jsonb）+ 标准↔参数 junction（纯键 PK） |
 | M06.F04.I01-I04 | /api/inspection/standards(±/{code}) | inspection_standards | 标准 CRUD（status: active/superseded/draft，默认 ACTIVE） |
+| M04.F06-F09.I01-I04 | /api/catalog/{models,specs,grades,brands}(±/{code}) | inspection_models/specs/grades/brands | 码表 4 实体同构 CRUD（16 op）：tenant 收口（claim 优先缺省 directory 默认租户 TENANT-001）、create=merge 全覆写（createdAt 刷新）、update=PATCH、回显域分页（items 全量，(sort_order, code) 排序）、他人租户行 404 隔离 |
 
 ## 与 saas 首切片的关键语义分叉（防跨家族串味）
 
