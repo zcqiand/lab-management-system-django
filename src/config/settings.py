@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "contracts",
     "entities",
+    "authn",
 ]
 
 MIDDLEWARE = [

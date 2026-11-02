@@ -12,6 +12,8 @@ from rest_framework.exceptions import AuthenticationFailed, NotAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import exception_handler
 
+from authn.errors import ApiError
+
 
 def envelope_exception_handler(exc: Exception, context: dict[str, Any]) -> Response | None:
     if isinstance(exc, (NotAuthenticated, AuthenticationFailed)):
@@ -19,4 +21,7 @@ def envelope_exception_handler(exc: Exception, context: dict[str, Any]) -> Respo
             {"code": "UNAUTHORIZED", "message": "tenant_id claim is required (ADR-0019)"},
             status=401,
         )
+    if isinstance(exc, ApiError):
+        # 家族错误契约（authn 域）：GlobalExceptionHandler 镜像 {code,message} 信封
+        return Response({"code": exc.code, "message": exc.message}, status=exc.status_code)
     return exception_handler(exc, context)

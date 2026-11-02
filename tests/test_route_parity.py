@@ -17,13 +17,24 @@ MANIFEST = json.loads(
     )
 )
 
-# 本切片（REQ-2026-030）：契约路径 -> 功能子项
+# 本切片（REQ-2026-030 contracts + T2 auth 域，REQ-2026-035）：契约路径 -> 功能子项
 SLICE = {
     "GET /api/contracts": "M02.F01.I01",
     "POST /api/contracts": "M02.F01.I03",
     "GET /api/contracts/{id}": "M02.F01.I02",
     "PUT /api/contracts/{id}": "M02.F01.I04",
     "DELETE /api/contracts/{id}": "M02.F01.I05",
+    # T2 auth 域 10 op（fastapi/springboot 同锚 ID）
+    "GET /api/auth/me": "M00.F01.I01",
+    "POST /api/auth/login": "M01.F05.I01",
+    "POST /api/auth/native-login": "M01.F05.I01",
+    "POST /api/auth/logout": "M01.F05.I05",
+    "POST /api/auth/refresh": "M01.F05.I04",
+    "GET /api/auth/menus": "M01.F04.I01",
+    "GET /api/auth/permissions": "M01.F04.I02",
+    "POST /api/auth/switch-tenant": "M00.F02.I01",
+    "GET /api/auth/sso/authorize": "M01.F05.I02",
+    "POST /api/auth/sso/callback": "M01.F05.I03",
 }
 
 
