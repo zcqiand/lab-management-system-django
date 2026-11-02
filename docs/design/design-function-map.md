@@ -28,6 +28,8 @@
 
 | M03.F03.I06-I11（检测记录 6 op） | /api/test-records(±/{id}) + /{id}/verdict | test_records | rails TestRecordService 镜像：tenant 收口、create 四必填 400（sampleId/parameterCode/requirement/result，rails 字面量）+ sample/parameter/standard FK 走 DB 约束（IntegrityError→400，savepoint 包裹防事务污染）、order updated_at desc + id asc、update=PATCH 跳 None、PATCH /{id}/verdict 直写可置 null（NON_NULL→键不在）、id=「TR-<uuid>」 |
 
+| M06.F08.I01-I06 + M06.F03.I07（参数界面 8 op） | /api/param-interfaces(±/{code}) + /links(POST/DELETE/GET) | inspection_param_interfaces + links | rails ParamInterfaceService/Junctions 镜像：平台级字典无 tenant（decode-only 无租户收口）、create code+componentPath 必填 400 + sortOrder 默认 0、list keyword code/name + order (sort_order, code)、回显信封 pageSize 缺省=len(items)、delete miss 404、config 非 dict 回退 {}、junction 复用 upsert_junction/unlink_junction（link 恒 204 upsert 整行覆盖含 created_at；unlink 幂等 no-op 204）；GET links 为契约豁免辅助端点不挂 ID |
+
 ## 与 saas 首切片的关键语义分叉（防跨家族串味）
 
 - 分页：lab **1-based 切片**（CT T11 仲裁）；saas 0 基——分页语义分叉在案
@@ -37,3 +39,4 @@
 - 错误体：两家族同形 `{code,message}`（NOT_FOUND / BAD_REQUEST / UNAUTHORIZED）
 - 字典域鉴权：M06 检测字典域为平台级实体（无 tenant 列）→ decode-only bearer **无租户收口**，401 `INVALID_CREDENTIALS "Bearer token required"`；contracts 域 BearerAuthentication 需 tenant_id claim + `UNAUTHORIZED` 信封——**两个鉴权面并存**，勿串
 - 字典域分页：无切片回显信封（items=全量过滤结果，page/pageSize 纯回显），按 (sort_order, code) 排序；与 contracts 域 1-based 切片**不同**——共享 op 级定稿表（5.127③）为准
+- 参数界面域 pageSize 缺省=len(items)（rails 分叉，勿套 receipts 的 20）；unlink 幂等 no-op 204（rails `&.destroy!` 参照实现；树文本「404 if 不存在」为旧注记不采用，同 act-422 裁定）

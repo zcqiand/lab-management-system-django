@@ -63,6 +63,15 @@ SLICE = {
     "PUT /api/test-records/{id}": "M03.F03.I09",
     "DELETE /api/test-records/{id}": "M03.F03.I10",
     "PATCH /api/test-records/{id}/verdict": "M03.F03.I11",
+    # T7 参数界面域 8 op（CRUD 5 + link/unlink/list-links；unlink 锚 M06.F03.I07）
+    "GET /api/param-interfaces": "M06.F08.I01",
+    "POST /api/param-interfaces": "M06.F08.I03",
+    "GET /api/param-interfaces/{code}": "M06.F08.I02",
+    "PUT /api/param-interfaces/{code}": "M06.F08.I04",
+    "DELETE /api/param-interfaces/{code}": "M06.F08.I05",
+    "POST /api/param-interfaces/links": "M06.F08.I06",
+    "DELETE /api/param-interfaces/links": "M06.F03.I07",
+    # GET /api/param-interfaces/links 为契约豁免辅助端点（.tsp 注记 _exempt §2）不挂 ID
     # T4 基础数据码表域 16 op（4 实体同构 CRUD）
     "GET /api/catalog/brands": "M04.F09.I01",
     "POST /api/catalog/brands": "M04.F09.I02",

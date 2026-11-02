@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from django.urls import path
 
-from inspection import catalog_views, views
+from inspection import catalog_views, param_interface_views, views
 
 urlpatterns = [
     # 基础数据码表 M04.F06-F09（4 实体同构 CRUD，16 op）
@@ -35,4 +35,9 @@ urlpatterns = [
     path("inspection/links/object-parameter", views.object_parameter_links),
     path("inspection/links/object-standard", views.object_standard_links),
     path("inspection/links/standard-parameter", views.standard_parameter_links),
+    # 参数界面 M06.F08（CRUD 5 + link/unlink/list-links）；静态 links 路径必须在
+    # <str:code> 前声明（Django 顺序匹配，镜像 rails/springboot 字面路径优先语义）
+    path("param-interfaces/links", param_interface_views.param_interface_links),
+    path("param-interfaces", param_interface_views.param_interfaces),
+    path("param-interfaces/<str:code>", param_interface_views.param_interface_detail),
 ]
