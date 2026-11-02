@@ -26,7 +26,13 @@ dev = [
 [tool.ruff]
 line-length = 100
 target-version = "py311"
-extend-exclude = ["src/lab_management_system_django/contract"]
+extend-exclude = [
+    "src/lab_management_system_django/contract",
+    # DB-First 生成区（scripts/scaffold-models.py 产物，禁手改；schema 漂移由
+    # tests/test_schema_parity.py 拦截）。生成行形（null=True TextField 等）非
+    # 手写风格，ruff DJ/format 不适用——与 contract DTO 区同款豁免。
+    "src/entities/models.py",
+]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "UP", "B", "SIM", "ARG", "PTH", "DJ"]

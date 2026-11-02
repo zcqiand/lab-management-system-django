@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from rest_framework import serializers
 
-from contracts.models import Contract
+from entities.models import Contracts as Contract
 
 
 class ContractSerializer(serializers.Serializer[Contract]):

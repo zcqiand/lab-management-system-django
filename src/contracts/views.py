@@ -24,8 +24,8 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from contracts.models import Contract
 from contracts.serializers import ContractSerializer
+from entities.models import Contracts as Contract
 from lab_management_system_django.auth import Principal
 
 # 可经 POST/PUT 写的列（camelCase -> 模型属性；id/tenantId/createdAt 路由层控制）

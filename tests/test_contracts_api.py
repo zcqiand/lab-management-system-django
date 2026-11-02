@@ -142,7 +142,7 @@ def test_list_garbage_token_401() -> None:
 @pytest.mark.django_db
 @pytest.mark.fn("M02.F01.I01")
 def test_list_200_default_pagination_1_based() -> None:
-    from contracts.models import Contract
+    from entities.models import Contracts as Contract
 
     resp = client().get(LIST_URL)
     assert resp.status_code == 200
@@ -224,7 +224,7 @@ def test_create_missing_required_400() -> None:
 @pytest.mark.django_db
 @pytest.mark.fn("M02.F01.I03")
 def test_create_201_app_side_identity_from_claim() -> None:
-    from contracts.models import Contract
+    from entities.models import Contracts as Contract
 
     code = f"DJ-{uuid.uuid4().hex[:8].upper()}"
     payload = contract_body(code)
