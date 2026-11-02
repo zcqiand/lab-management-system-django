@@ -188,10 +188,10 @@ def sso_login(client: APIClient) -> dict:
     return resp.json()
 
 
-# === M01.F05.I01 密码登录（+ native-login 同源直通） ===
+# === M01.F05.I06 密码登录（+ native-login 同源直通） ===
 
 
-@pytest.mark.fn("M01.F05.I01")
+@pytest.mark.fn("M01.F05.I06")
 def test_login_ok(client: APIClient) -> None:
     body = login(client)
     assert body["user"] == {
@@ -215,7 +215,7 @@ def test_login_ok(client: APIClient) -> None:
     assert refresh["typ"] == "refresh" and refresh["saas_refresh_token"] == "dev-placeholder"
 
 
-@pytest.mark.fn("M01.F05.I01")
+@pytest.mark.fn("M01.F05.I06")
 def test_login_native_same_path(client: APIClient) -> None:
     resp = client.post(
         "/api/auth/native-login", {"username": "alice", "password": "dev123456"}, format="json"
@@ -224,7 +224,7 @@ def test_login_native_same_path(client: APIClient) -> None:
     assert resp.json()["user"]["id"] == "USER-A"
 
 
-@pytest.mark.fn("M01.F05.I01")
+@pytest.mark.fn("M01.F05.I06")
 def test_login_bad_password_401(client: APIClient, reg: Any) -> None:
     fake: FakeSaasAuth = reg.saas_auth
     fake.user_login_failure = InvalidGrantError('saas 400 {"error":"invalid_grant"}')
@@ -233,7 +233,7 @@ def test_login_bad_password_401(client: APIClient, reg: Any) -> None:
     assert resp.json()["code"] == "INVALID_CREDENTIALS"
 
 
-@pytest.mark.fn("M01.F05.I01")
+@pytest.mark.fn("M01.F05.I06")
 def test_login_missing_field_400(client: APIClient) -> None:
     resp = client.post("/api/auth/login", {"username": "alice"}, format="json")
     assert resp.status_code == 400
@@ -508,7 +508,7 @@ class EnrichingSaasMe(FakeSaasMe):
         return []
 
 
-@pytest.mark.fn("M01.F05.I01")
+@pytest.mark.fn("M01.F05.I06")
 def test_login_proxies_saas_and_resigns_lab_jwt(client: APIClient, reg: Any) -> None:
     reg.saas_auth = RecordingSaasAuth()
     reg.saas_me = EnrichingSaasMe()
@@ -593,7 +593,7 @@ def test_login_session_coherence_me_and_switch_stay_in_saas_tenant_system(
     assert decode(switched_body["token"])["tenant_id"] == tid
 
 
-@pytest.mark.fn("M01.F05.I01")
+@pytest.mark.fn("M01.F05.I06")
 def test_saas_client_user_login_sends_oauth_client_id(monkeypatch: pytest.MonkeyPatch) -> None:
     """出站 body clientId=OAuth client id（LAB_SAAS_CLIENT_ID），不是 service_client_id。"""
     captured: dict[str, Any] = {}

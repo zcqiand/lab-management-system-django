@@ -26,8 +26,8 @@ SLICE = {
     "DELETE /api/contracts/{id}": "M02.F01.I05",
     # T2 auth 域 10 op（fastapi/springboot 同锚 ID）
     "GET /api/auth/me": "M00.F01.I01",
-    "POST /api/auth/login": "M01.F05.I01",
-    "POST /api/auth/native-login": "M01.F05.I01",
+    "POST /api/auth/login": "M01.F05.I06",
+    "POST /api/auth/native-login": "M01.F05.I06",
     "POST /api/auth/logout": "M01.F05.I05",
     "POST /api/auth/refresh": "M01.F05.I04",
     "GET /api/auth/menus": "M01.F04.I01",
@@ -35,6 +35,35 @@ SLICE = {
     "POST /api/auth/switch-tenant": "M00.F02.I01",
     "GET /api/auth/sso/authorize": "M01.F05.I02",
     "POST /api/auth/sso/callback": "M01.F05.I03",
+    # T3 检测字典域 28 op（shared function-tree 现行锚，lab-go REQ-2026-004 同款）
+    "GET /api/inspection/specialties": "M06.F01.I01",
+    "POST /api/inspection/specialties": "M06.F01.I02",
+    "PUT /api/inspection/specialties/{code}": "M06.F01.I03",
+    "DELETE /api/inspection/specialties/{code}": "M06.F01.I04",
+    "GET /api/inspection/objects": "M06.F02.I01",
+    "POST /api/inspection/objects": "M06.F02.I02",
+    "PUT /api/inspection/objects/{code}": "M06.F02.I03",
+    "DELETE /api/inspection/objects/{code}": "M06.F02.I04",
+    "GET /api/inspection/parameters": "M06.F03.I01",
+    "POST /api/inspection/parameters": "M06.F03.I02",
+    "PUT /api/inspection/parameters/{code}": "M06.F03.I03",
+    "DELETE /api/inspection/parameters/{code}": "M06.F03.I04",
+    "GET /api/inspection/standards": "M06.F04.I01",
+    "POST /api/inspection/standards": "M06.F04.I02",
+    "PUT /api/inspection/standards/{code}": "M06.F04.I03",
+    "DELETE /api/inspection/standards/{code}": "M06.F04.I04",
+    "POST /api/inspection/links/specialty-object": "M06.F02.I05",
+    "DELETE /api/inspection/links/specialty-object": "M06.F02.I06",
+    "GET /api/inspection/links/specialty-object": "M06.F02.I09",
+    "POST /api/inspection/links/object-parameter": "M06.F02.I07",
+    "DELETE /api/inspection/links/object-parameter": "M06.F02.I08",
+    "GET /api/inspection/links/object-parameter": "M06.F02.I10",
+    "POST /api/inspection/links/object-standard": "M06.F01.I05",
+    "DELETE /api/inspection/links/object-standard": "M06.F01.I06",
+    "GET /api/inspection/links/object-standard": "M06.F01.I07",
+    "POST /api/inspection/links/standard-parameter": "M06.F03.I05",
+    "DELETE /api/inspection/links/standard-parameter": "M06.F03.I06",
+    "GET /api/inspection/links/standard-parameter": "M06.F03.I08",
 }
 
 
@@ -47,7 +76,12 @@ def _walk(patterns: list, prefix: str = ""):
 
 
 def _normalize(route: str) -> str:
-    return ("/" + route).replace("<str:contract_id>", "{id}").rstrip("/")
+    return (
+        ("/" + route)
+        .replace("<str:contract_id>", "{id}")
+        .replace("<str:code>", "{code}")
+        .rstrip("/")
+    )
 
 
 def _wired() -> set[str]:

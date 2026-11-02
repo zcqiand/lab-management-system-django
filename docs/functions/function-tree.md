@@ -51,16 +51,45 @@
 
 | 功能 ID | 功能名称 | 说明 | 状态 |
 |---|---|---|---|
-| M00.F01 | 当前用户会话 | 当前用户信息 + 关联租户列表 + 当前选中租户（GET /auth/me） | 规划 |
-| M00.F02 | 登录选租户 | 登录后选择租户，换发携带 tenant_id claim 的 token（POST /auth/switch-tenant） | 规划 |
+| M00.F01 | 当前用户会话 | 当前用户信息 + 关联租户列表 + 当前选中租户（GET /auth/me） | 开发中 |
+| M00.F02 | 登录选租户 | 登录后选择租户，换发携带 tenant_id claim 的 token（POST /auth/switch-tenant） | 开发中 |
+
+### M00.F01 当前用户会话
+
+| 子项 ID | 名称 | 类型 | 交付 | 说明 | 状态 |
+|---|---|---|---|---|---|
+| M00.F01.I01 | 当前会话 | 接口 | 前端+后端 | GET /api/auth/me：user + 关联租户列表 + currentTenantId（token tenant_id claim，缺省 TENANT-001） | 开发中 |
+
+### M00.F02 登录选租户
+
+| 子项 ID | 名称 | 类型 | 交付 | 说明 | 状态 |
+|---|---|---|---|---|---|
+| M00.F02.I01 | 选租户换发 | 接口 | 前端+后端 | POST /api/auth/switch-tenant：校验租户归属后换发携带 tenant_id claim 的 token | 开发中 |
 
 
 ## M01 认证管理
 
 | 功能 ID | 功能名称 | 说明 | 状态 |
 |---|---|---|---|
-| M01.F04 | 权限管理 | RBAC 角色权限、路由守卫、权限指令、动态菜单（身份平台下发） | 规划 |
-| M01.F05 | 认证管理 | OAuth 2.0 授权码 SSO（client_secret 后端持）+ lab 自家 JWT 签发，saas token 不出 lab 后端 | 规划 |
+| M01.F04 | 权限管理 | RBAC 角色权限、路由守卫、权限指令、动态菜单（身份平台下发） | 开发中 |
+| M01.F05 | 认证管理 | OAuth 2.0 授权码 SSO（client_secret 后端持）+ lab 自家 JWT 签发，saas token 不出 lab 后端 | 开发中 |
+
+### M01.F04 权限管理
+
+| 子项 ID | 名称 | 类型 | 交付 | 说明 | 状态 |
+|---|---|---|---|---|---|
+| M01.F04.I01 | 动态菜单 | 接口 | 前端+后端 | GET /api/auth/menus：按角色下发导航树（5 根节点，镜像 lab-msw） | 开发中 |
+| M01.F04.I02 | 权限集 | 接口 | 前端+后端 | GET /api/auth/permissions：RBAC 权限串列表（admin 全量 11 项） | 开发中 |
+
+### M01.F05 认证管理
+
+| 子项 ID | 名称 | 类型 | 交付 | 说明 | 状态 |
+|---|---|---|---|---|---|
+| M01.F05.I02 | SSO 跳转 | 接口 | 前端+后端 | GET /api/auth/sso/authorize：RFC 6749 §10.12 标准 state（前端生成、原样透传 saas 回显、前端比对），forward saas POST /api/v1/oauth/authorize 拿 code | 开发中 |
+| M01.F05.I03 | SSO 回调 | 接口 | 前端+后端 | POST /api/auth/sso/callback:saas POST /api/v1/oauth/token 用一次性 code 换 token,再 /me/whoami + /me/tenants 拿 user,membership 信 saas;首次 SSO 按 email upsert 到 lab directory;state 校验在前端回跳比对 | 开发中 |
+| M01.F05.I04 | 刷新 token | 接口 | 前端+后端 | POST /api/auth/refresh:lab refresh token 是 HS256 JWT(typ=refresh),内嵌 saas refresh token;调 saas POST /api/v1/oauth/token grantType=refresh_token 续,再签新 lab JWT | 开发中 |
+| M01.F05.I05 | 登出 | 接口 | 前端+后端 | POST /api/auth/logout：无状态 JWT 服务端无 session，前端清存储 | 开发中 |
+| M01.F05.I06 | 原生登录 | 接口 | 前端+后端 | POST /api/auth/native-login：非浏览器客户端（iOS/Android 原生表单）密码通道，REQ-2026-003 Q4-C 人裁（2026-09-28，非恢复已废弃 I01 web 密码端点）；REQ-2026-023 变更（2026-10-11 人裁方案 A）：校验委托 saas IdP 代理——请求体账密调 saas /api/v1/auth/login（clientId=lab-management），lab 自家 JWT 重签与 LoginResponse 契约形状不变，LAB_AUTH_DEV_PASSWORD 全家族退役 | 开发中 |
 
 
 ## M02 资源管理
@@ -115,14 +144,66 @@
 
 | 功能 ID | 功能名称 | 说明 | 状态 |
 |---|---|---|---|
-| M06.F01 | 检测专项 | InspectionSpecialty CRUD（检测能力字典根） | 规划 |
-| M06.F02 | 检测项目 | InspectionObject CRUD + 专项/参数关联 | 规划 |
-| M06.F03 | 检测参数 | InspectionParameter CRUD + 标准/参数关联 | 规划 |
-| M06.F04 | 检测标准 | InspectionStandard CRUD（含状态：active/superseded/draft） | 规划 |
+| M06.F01 | 检测专项 | InspectionSpecialty CRUD（检测能力字典根） | 开发中 |
+| M06.F02 | 检测项目 | InspectionObject CRUD + 专项/参数关联 | 开发中 |
+| M06.F03 | 检测参数 | InspectionParameter CRUD + 标准/参数关联 | 开发中 |
+| M06.F04 | 检测标准 | InspectionStandard CRUD（含状态：active/superseded/draft） | 开发中 |
 | M06.F05 | 计算方法 | CalculationMethod 维护（复合主键，算法类型 + 公式） | 规划 |
 | M06.F06 | 技术要求 | TechnicalRequirement 维护，按四维度匹配；brand/model/grade/spec 改为 FK 引用实体 | 规划 |
 | M06.F07 | 报告名称 | InspectionReportName CRUD + extFields 模板 + 关联标准/参数 | 规划 |
 | M06.F08 | 参数界面 | ParamInterface 维护 + 参数↔界面 link | 规划 |
+
+### M06.F01 检测专项
+
+| 子项 ID | 名称 | 类型 | 交付 | 说明 | 状态 |
+|---|---|---|---|---|---|
+| M06.F01.I01 | 专项列表 | 接口 | 前端+后端 | GET /api/inspection/specialties?page=&pageSize=&keyword=：`Page<InspectionSpecialty>`，按 code/name 模糊匹配，平台级 | 开发中 |
+| M06.F01.I02 | 创建专项 | 接口 | 前端+后端 | POST /api/inspection/specialties：code/officialNo/name 必填；isOfficial/enabled 默认 true；sortOrder 默认 0 | 开发中 |
+| M06.F01.I03 | 更新专项 | 接口 | 前端+后端 | PUT /api/inspection/specialties/{code}：PATCH 语义，未传字段保留 | 开发中 |
+| M06.F01.I04 | 删除专项 | 接口 | 前端+后端 | DELETE /api/inspection/specialties/{code}：204 if exists，否则 404 | 开发中 |
+| M06.F01.I05 | 项目↔标准 link | 接口 | 前端+后端 | POST /api/inspection/links/object-standard：建立 object→standard(role) 关联，role 必填（TESTING/JUDGMENT） | 开发中 |
+| M06.F01.I06 | 项目↔标准 unlink | 接口 | 前端+后端 | DELETE /api/inspection/links/object-standard：404 if 不存在 | 开发中 |
+| M06.F01.I07 | 项目↔标准 列表 | 接口 | 前端+后端 | GET /api/inspection/links/object-standard?inspectionObjectCode=&role=：`Page<ObjectStandardLink>`，按 objectCode/role 过滤 | 开发中 |
+
+### M06.F02 检测项目
+
+| 子项 ID | 名称 | 类型 | 交付 | 说明 | 状态 |
+|---|---|---|---|---|---|
+| M06.F02.I01 | 项目列表 | 接口 | 前端+后端 | GET /api/inspection/objects?page=&pageSize=&inspectionSpecialtyCode=&keyword=：`Page<InspectionObject>`，按 code/name 模糊 + 专项过滤 | 开发中 |
+| M06.F02.I02 | 创建项目 | 接口 | 前端+后端 | POST /api/inspection/objects：code/inspectionSpecialtyCode/sourceProjectNo/sourceProjectName/name 必填；isOptionalForQualification 默认 false；isOfficial/enabled 默认 true | 开发中 |
+| M06.F02.I03 | 更新项目 | 接口 | 前端+后端 | PUT /api/inspection/objects/{code}：PATCH 语义 | 开发中 |
+| M06.F02.I04 | 删除项目 | 接口 | 前端+后端 | DELETE /api/inspection/objects/{code}：204 if exists | 开发中 |
+| M06.F02.I05 | 专项↔项目 link | 接口 | 前端+后端 | POST /api/inspection/links/specialty-object：建立 specialty→object 关联，remark 可选 | 开发中 |
+| M06.F02.I06 | 专项↔项目 unlink | 接口 | 前端+后端 | DELETE /api/inspection/links/specialty-object：404 if 不存在 | 开发中 |
+| M06.F02.I07 | 项目↔参数 link | 接口 | 前端+后端 | POST /api/inspection/links/object-parameter：建立 object→parameter 关联，qualificationLevel 默认 QUALIFIED，sourcePage/remark 可选 | 开发中 |
+| M06.F02.I08 | 项目↔参数 unlink | 接口 | 前端+后端 | DELETE /api/inspection/links/object-parameter：404 if 不存在 | 开发中 |
+| M06.F02.I09 | 专项↔项目 列表 | 接口 | 前端+后端 | GET /api/inspection/links/specialty-object?inspectionSpecialtyCode=：`Page<SpecialtyObjectLink>`，按专项 code 过滤 | 开发中 |
+| M06.F02.I10 | 项目↔参数 列表 | 接口 | 前端+后端 | GET /api/inspection/links/object-parameter?inspectionObjectCode=&inspectionParameterCode=：`Page<ObjectParameterLink>`，按 objectCode/parameterCode 过滤 | 开发中 |
+
+### M06.F03 检测参数
+
+| 子项 ID | 名称 | 类型 | 交付 | 说明 | 状态 |
+|---|---|---|---|---|---|
+| M06.F03.I01 | 参数列表 | 接口 | 前端+后端 | GET /api/inspection/parameters?page=&pageSize=&keyword=&sourceType=：`Page<InspectionParameter>`，按 code/name 模糊 + sourceType 过滤（official/custom） | 开发中 |
+| M06.F03.I02 | 创建参数 | 接口 | 前端+后端 | POST /api/inspection/parameters：code/name/rawName/canonicalName 必填；sourceType 默认 OFFICIAL；aliases 默认 [] | 开发中 |
+| M06.F03.I03 | 更新参数 | 接口 | 前端+后端 | PUT /api/inspection/parameters/{code}：PATCH 语义；aliases 传则整体替换 | 开发中 |
+| M06.F03.I04 | 删除参数 | 接口 | 前端+后端 | DELETE /api/inspection/parameters/{code}：204 if exists | 开发中 |
+| M06.F03.I05 | 标准↔参数 link | 接口 | 前端+后端 | POST /api/inspection/links/standard-parameter：建立 standard→parameter 关联 | 开发中 |
+| M06.F03.I06 | 标准↔参数 unlink | 接口 | 前端+后端 | DELETE /api/inspection/links/standard-parameter：404 if 不存在 | 开发中 |
+| M06.F03.I07 | 参数↔界面 unlink | 接口 | 前端+后端 | DELETE /api/param-interfaces/links：404 if 不存在 | 规划 |
+| M06.F03.I08 | 标准↔参数 列表 | 接口 | 前端+后端 | GET /api/inspection/links/standard-parameter?inspectionStandardCode=&inspectionParameterCode=：`Page<StandardParameterLink>`，按 standardCode/parameterCode 过滤 | 开发中 |
+
+### M06.F04 检测标准
+
+| 子项 ID | 名称 | 类型 | 交付 | 说明 | 状态 |
+|---|---|---|---|---|---|
+| M06.F04.I01 | 标准列表 | 接口 | 前端+后端 | GET /api/inspection/standards?page=&pageSize=&keyword=&status=：`Page<InspectionStandard>`，按 code/name 模糊 + status 过滤（active/superseded/draft） | 开发中 |
+| M06.F04.I02 | 创建标准 | 接口 | 前端+后端 | POST /api/inspection/standards：code/name 必填；status 默认 ACTIVE | 开发中 |
+| M06.F04.I03 | 更新标准 | 接口 | 前端+后端 | PUT /api/inspection/standards/{code}：PATCH 语义 | 开发中 |
+| M06.F04.I04 | 删除标准 | 接口 | 前端+后端 | DELETE /api/inspection/standards/{code}：204 if exists | 开发中 |
+| M06.F04.I05 | 项目↔报告名称 unlink | 接口 | 前端+后端 | DELETE /api/report-names/links/object：404 if 不存在 | 规划 |
+| M06.F04.I06 | 报告名称↔参数 unlink | 接口 | 前端+后端 | DELETE /api/report-names/links/parameter：404 if 不存在 | 规划 |
+| M06.F04.I07 | 报告名称↔标准 unlink | 接口 | 前端+后端 | DELETE /api/report-names/links/standard：404 if 不存在 | 规划 |
 
 ---
 

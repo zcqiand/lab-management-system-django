@@ -96,7 +96,7 @@ class AuthService:
     def config(self) -> AuthConfig:
         return self.reg.config
 
-    # === M01.F05.I01 密码登录（AuthService.login 镜像） ===
+    # === M01.F05.I06 密码登录（AuthService.login 镜像） ===
 
     def login(self, username: str, password: str) -> dict[str, Any]:
         username = username.strip()

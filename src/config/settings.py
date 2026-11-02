@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "contracts",
     "entities",
     "authn",
+    "inspection",
 ]
 
 MIDDLEWARE = [
