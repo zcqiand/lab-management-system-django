@@ -45,6 +45,8 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    # 家族 CORS 契约（rails insert_before 0 同位：最外层，401 也带 Allow-Origin）
+    "config.cors.FamilyCorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",

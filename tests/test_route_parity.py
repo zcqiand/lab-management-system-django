@@ -191,7 +191,12 @@ def test_slice_ops_all_wired() -> None:
         assert path in wired, f"{fid} {op} 未按契约挂载"
 
 
+# /health 是 healthcheck 探针非 OpenAPI 契约面 —— 唯一合法私路由（rails
+# EXTRA_ROUTE_ALLOWLIST 同款：API 面只认生成物，infra 面不进 manifest）
+EXTRA_ROUTE_ALLOWLIST = {"/health"}
+
+
 def test_no_undocumented_routes() -> None:
     manifest_paths = {o["path"] for o in MANIFEST["operations"]}
-    extra = _wired() - manifest_paths
+    extra = _wired() - manifest_paths - EXTRA_ROUTE_ALLOWLIST
     assert not extra, f"未在契约 manifest 的私端点: {extra}"
