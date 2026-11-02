@@ -32,6 +32,9 @@
 
 | M06.F07.I01-I08 + M06.F04.I05-I07（报告名称 14 op） | /api/report-names(±/{code}) + /links/{object,standard,parameter} | inspection_report_names + 3 junction 表 | rails InspectionReportNameService/ReportNameJunctions 镜像：create code+name 必填 400 + **JPA merge**（同 code 覆盖整行含 createdAt，2026-09-29 live 共库对拍实锤）、extFields 非 list 回退 []、字典信封 pageSize 缺省=len、junction 三组（standard 组 role 入 PK，同 standard 不同 role 并存）link upsert 恒 204 / unlink 幂等 no-op 204 / GET 短信封 page=1（三组 GET 豁免不挂 ID） |
 
+| M06.F06.I01-I05（技术要求 5 op） | /api/technical-requirements(±/{object}/{param}/{standard}) | inspection_technical_requirements | rails TechnicalRequirementService/Fields 镜像：tenant 收口（claim 优先缺省 directory 默认租户）、list 4 过滤 + order (sort_order, object, parameter, standard) **裸数组**、create 三键任一缺失 400 + **JPA merge**（同三键+同租户覆盖整行含 createdAt）+ 枚举缺省 valueType=numeric/comparison=≥/judgmentMode=manual/verificationStatus=draft（`body[k] \|\| default`）+ NULLABLE 15 键直透 + sortOrder 默认 0、update 全字段跳 None + updated_at 恒刷、delete/get 他人租户行 miss→404 境外不可见、DTO NON_NULL 剔 None |
+| M06.F05.I01-I05（计算方法 5 op） | /api/calculation-methods(±/{object}/{param}) | inspection_calculation_methods | rails CalculationMethodService 镜像：平台级字典无 tenant（decode-only）、list 双过滤 + order (sort_order, object, parameter) **裸数组**（rails 分叉，非字典信封）、create 双键任一缺失 400 + **JPA merge**（同双键覆盖整行含 createdAt）+ 缺省 algorithmType=manual/specimenCount=1/sortOrder=0、update truthy/strict 双判定（镜像 springboot mapper：truthy 真值才写、strict 非 None 即写——specimenCount/sortOrder 可写 0）、delete miss→404、DTO NON_NULL 剔 None | |
+
 ## 与 saas 首切片的关键语义分叉（防跨家族串味）
 
 - 分页：lab **1-based 切片**（CT T11 仲裁）；saas 0 基——分页语义分叉在案
@@ -42,3 +45,5 @@
 - 字典域鉴权：M06 检测字典域为平台级实体（无 tenant 列）→ decode-only bearer **无租户收口**，401 `INVALID_CREDENTIALS "Bearer token required"`；contracts 域 BearerAuthentication 需 tenant_id claim + `UNAUTHORIZED` 信封——**两个鉴权面并存**，勿串
 - 字典域分页：无切片回显信封（items=全量过滤结果，page/pageSize 纯回显），按 (sort_order, code) 排序；与 contracts 域 1-based 切片**不同**——共享 op 级定稿表（5.127③）为准
 - 参数界面域 pageSize 缺省=len(items)（rails 分叉，勿套 receipts 的 20）；unlink 幂等 no-op 204（rails `&.destroy!` 参照实现；树文本「404 if 不存在」为旧注记不采用，同 act-422 裁定）
+- **复合 PK 表禁 row.save()/.delete()**：Django legacy 多 `primary_key=True` 只认首列作 `Meta.pk`，`row.save()` 的 UPDATE WHERE 只按首列会误伤共享首键的兄弟行（T9 实锤：同 object 三行被连环覆写）。TR/CM create-merge/update/delete 一律走 `queryset.filter(全键).update/delete/create`，junction upsert 同收（helpers.upsert_junction 已改 query.update 路径——T7/T8 已落地 junction 的 update 路径带同款隐患，本批一并闭合）
+- 技术要求/计算方法 list 均**裸数组**（rails render_camel 直出，非字典信封）；CM update truthy/strict 双判定（truthy 真值才写、strict 非 None 即写，specimenCount/sortOrder 可写 0）

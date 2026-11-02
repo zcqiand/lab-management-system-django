@@ -18,6 +18,9 @@ MANIFEST = json.loads(
 )
 
 # 本切片（REQ-2026-030 contracts + T2 auth 域，REQ-2026-035）：契约路径 -> 功能子项
+# T9 复合主键路径模板（行宽 100 内复用）
+_CM = "{inspectionObjectCode}/{inspectionParameterCode}"
+_TR = "{inspectionObjectCode}/{inspectionParameterCode}/{judgmentStandardCode}"
 SLICE = {
     "GET /api/contracts": "M02.F01.I01",
     "POST /api/contracts": "M02.F01.I03",
@@ -84,6 +87,17 @@ SLICE = {
     "DELETE /api/report-names/links/standard": "M06.F04.I07",
     "POST /api/report-names/links/parameter": "M06.F07.I08",
     "DELETE /api/report-names/links/parameter": "M06.F04.I06",
+    # T9 计算方法域 5 op（复合双键；list 裸数组）+ 技术要求域 5 op（复合三键 tenant 收口）
+    "GET /api/calculation-methods": "M06.F05.I01",
+    "POST /api/calculation-methods": "M06.F05.I03",
+    f"GET /api/calculation-methods/{_CM}": "M06.F05.I02",
+    f"PUT /api/calculation-methods/{_CM}": "M06.F05.I04",
+    f"DELETE /api/calculation-methods/{_CM}": "M06.F05.I05",
+    "GET /api/technical-requirements": "M06.F06.I01",
+    "POST /api/technical-requirements": "M06.F06.I03",
+    f"GET /api/technical-requirements/{_TR}": "M06.F06.I02",
+    f"PUT /api/technical-requirements/{_TR}": "M06.F06.I04",
+    f"DELETE /api/technical-requirements/{_TR}": "M06.F06.I05",
     # T4 基础数据码表域 16 op（4 实体同构 CRUD）
     "GET /api/catalog/brands": "M04.F09.I01",
     "POST /api/catalog/brands": "M04.F09.I02",
@@ -149,6 +163,9 @@ def _normalize(route: str) -> str:
         .replace("<str:sample_id>", "{id}")
         .replace("<str:record_id>", "{id}")
         .replace("<str:code>", "{code}")
+        .replace("<str:inspection_object_code>", "{inspectionObjectCode}")
+        .replace("<str:inspection_parameter_code>", "{inspectionParameterCode}")
+        .replace("<str:judgment_standard_code>", "{judgmentStandardCode}")
         .rstrip("/")
     )
 

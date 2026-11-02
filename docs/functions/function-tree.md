@@ -245,9 +245,29 @@
 | M06.F02 | 检测项目 | InspectionObject CRUD + 专项/参数关联 | 开发中 |
 | M06.F03 | 检测参数 | InspectionParameter CRUD + 标准/参数关联 | 开发中 |
 | M06.F04 | 检测标准 | InspectionStandard CRUD（含状态：active/superseded/draft） | 开发中 |
-| M06.F05 | 计算方法 | CalculationMethod 维护（复合主键，算法类型 + 公式） | 规划 |
-| M06.F06 | 技术要求 | TechnicalRequirement 维护，按四维度匹配；brand/model/grade/spec 改为 FK 引用实体 | 规划 |
+| M06.F05 | 计算方法 | CalculationMethod 维护（复合主键，算法类型 + 公式） | 开发中 |
+| M06.F06 | 技术要求 | TechnicalRequirement 维护，按四维度匹配；brand/model/grade/spec 改为 FK 引用实体 | 开发中 |
 | M06.F07 | 报告名称 | InspectionReportName CRUD + extFields 模板 + 关联标准/参数 | 开发中 |
+
+### M06.F05 计算方法
+
+| 子项 ID | 名称 | 类型 | 交付 | 说明 | 状态 |
+|---|---|---|---|---|---|
+| M06.F05.I01 | 计算方法列表 | 接口 | 前端+后端 | GET /api/calculation-methods?inspectionObjectCode=&inspectionParameterCode=：平台级（无 tenant 过滤），裸数组 | 开发中 |
+| M06.F05.I02 | 计算方法详情 | 接口 | 前端+后端 | GET /api/calculation-methods/{inspectionObjectCode}/{inspectionParameterCode}：复合主键 | 开发中 |
+| M06.F05.I03 | 创建计算方法 | 接口 | 前端+后端 | POST /api/calculation-methods：body CreateCalculationMethodRequest，algorithmType 默认 MANUAL、specimenCount 默认 1 | 开发中 |
+| M06.F05.I04 | 更新计算方法 | 接口 | 前端+后端 | PUT /api/calculation-methods/{...}：PATCH 语义（truthy/strict 双判定） | 开发中 |
+| M06.F05.I05 | 删除计算方法 | 接口 | 前端+后端 | DELETE /api/calculation-methods/{...}：204 | 开发中 |
+
+### M06.F06 技术要求
+
+| 子项 ID | 名称 | 类型 | 交付 | 说明 | 状态 |
+|---|---|---|---|---|---|
+| M06.F06.I01 | 技术要求列表 | 接口 | 前端+后端 | GET /api/technical-requirements?inspectionObjectCode=&inspectionParameterCode=&judgmentStandardCode=&verificationStatus=：tenant 收口 + 4 过滤，裸数组 | 开发中 |
+| M06.F06.I02 | 技术要求详情 | 接口 | 前端+后端 | GET /api/technical-requirements/{object}/{param}/{standard}：复合三键 | 开发中 |
+| M06.F06.I03 | 创建技术要求 | 接口 | 前端+后端 | POST /api/technical-requirements：tenant 从 token claim 注入；默认值 numeric/≥/manual/draft | 开发中 |
+| M06.F06.I04 | 更新技术要求 | 接口 | 前端+后端 | PUT /api/technical-requirements/{...}：PATCH 语义 | 开发中 |
+| M06.F06.I05 | 删除技术要求 | 接口 | 前端+后端 | DELETE /api/technical-requirements/{...}：204 | 开发中 |
 
 ### M06.F07 报告名称
 

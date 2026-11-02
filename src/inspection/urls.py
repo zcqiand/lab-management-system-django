@@ -5,7 +5,14 @@ from __future__ import annotations
 
 from django.urls import path
 
-from inspection import catalog_views, param_interface_views, report_name_views, views
+from inspection import (
+    calculation_method_views,
+    catalog_views,
+    param_interface_views,
+    report_name_views,
+    technical_requirement_views,
+    views,
+)
 
 urlpatterns = [
     # 基础数据码表 M04.F06-F09（4 实体同构 CRUD，16 op）
@@ -46,4 +53,16 @@ urlpatterns = [
     path("report-names/links/parameter", report_name_views.parameter_links),
     path("report-names", report_name_views.report_names),
     path("report-names/<str:code>", report_name_views.report_name_detail),
+    # 计算方法 M06.F05（复合双键）+ 技术要求 M06.F06（复合三键）
+    path("calculation-methods", calculation_method_views.calculation_methods),
+    path(
+        "calculation-methods/<str:inspection_object_code>/<str:inspection_parameter_code>",
+        calculation_method_views.calculation_method_detail,
+    ),
+    path("technical-requirements", technical_requirement_views.technical_requirements),
+    path(
+        "technical-requirements/<str:inspection_object_code>"
+        "/<str:inspection_parameter_code>/<str:judgment_standard_code>",
+        technical_requirement_views.technical_requirement_detail,
+    ),
 ]

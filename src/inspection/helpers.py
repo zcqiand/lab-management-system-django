@@ -104,16 +104,15 @@ def upsert_junction(
     model: type[Any], key_values: dict[str, Any], payload_values: dict[str, Any]
 ) -> None:
     """JPA save()=merge 镜像：命中主键 → 覆盖全部载荷字段（含 None，第二次 link
-    空 remark 抹掉 remark）；未命中 → 新增行。"""
+    空 remark 抹掉 remark）；未命中 → 新增行。
+
+    复合 PK 表禁用 row.save()（Django legacy 多 primary_key=True 只认第一列作
+    Meta.pk，UPDATE WHERE 只按首列会误伤共享首键的兄弟行——T9 实锤），改走
+    queryset.update（WHERE 全键）。"""
     now = now_iso()
-    row = model.objects.filter(**key_values).first()
-    if row is None:
+    updated = model.objects.filter(**key_values).update(**payload_values, updated_at=now)
+    if not updated:
         model.objects.create(**key_values, **payload_values, created_at=now, updated_at=now)
-        return
-    for name, value in payload_values.items():
-        setattr(row, name, value)
-    row.updated_at = now
-    row.save(update_fields=[*payload_values, "updated_at"])
 
 
 def unlink_junction(model: type[Any], key_values: dict[str, Any]) -> None:
