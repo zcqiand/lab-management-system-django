@@ -72,6 +72,18 @@ SLICE = {
     "POST /api/param-interfaces/links": "M06.F08.I06",
     "DELETE /api/param-interfaces/links": "M06.F03.I07",
     # GET /api/param-interfaces/links 为契约豁免辅助端点（.tsp 注记 _exempt §2）不挂 ID
+    # T8 报告名称域 14 op（CRUD 5 + 3 组 junction link/unlink；3 组 GET links 豁免不挂 ID）
+    "GET /api/report-names": "M06.F07.I01",
+    "POST /api/report-names": "M06.F07.I03",
+    "GET /api/report-names/{code}": "M06.F07.I02",
+    "PUT /api/report-names/{code}": "M06.F07.I04",
+    "DELETE /api/report-names/{code}": "M06.F07.I05",
+    "POST /api/report-names/links/object": "M06.F07.I06",
+    "DELETE /api/report-names/links/object": "M06.F04.I05",
+    "POST /api/report-names/links/standard": "M06.F07.I07",
+    "DELETE /api/report-names/links/standard": "M06.F04.I07",
+    "POST /api/report-names/links/parameter": "M06.F07.I08",
+    "DELETE /api/report-names/links/parameter": "M06.F04.I06",
     # T4 基础数据码表域 16 op（4 实体同构 CRUD）
     "GET /api/catalog/brands": "M04.F09.I01",
     "POST /api/catalog/brands": "M04.F09.I02",

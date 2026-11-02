@@ -30,6 +30,8 @@
 
 | M06.F08.I01-I06 + M06.F03.I07（参数界面 8 op） | /api/param-interfaces(±/{code}) + /links(POST/DELETE/GET) | inspection_param_interfaces + links | rails ParamInterfaceService/Junctions 镜像：平台级字典无 tenant（decode-only 无租户收口）、create code+componentPath 必填 400 + sortOrder 默认 0、list keyword code/name + order (sort_order, code)、回显信封 pageSize 缺省=len(items)、delete miss 404、config 非 dict 回退 {}、junction 复用 upsert_junction/unlink_junction（link 恒 204 upsert 整行覆盖含 created_at；unlink 幂等 no-op 204）；GET links 为契约豁免辅助端点不挂 ID |
 
+| M06.F07.I01-I08 + M06.F04.I05-I07（报告名称 14 op） | /api/report-names(±/{code}) + /links/{object,standard,parameter} | inspection_report_names + 3 junction 表 | rails InspectionReportNameService/ReportNameJunctions 镜像：create code+name 必填 400 + **JPA merge**（同 code 覆盖整行含 createdAt，2026-09-29 live 共库对拍实锤）、extFields 非 list 回退 []、字典信封 pageSize 缺省=len、junction 三组（standard 组 role 入 PK，同 standard 不同 role 并存）link upsert 恒 204 / unlink 幂等 no-op 204 / GET 短信封 page=1（三组 GET 豁免不挂 ID） |
+
 ## 与 saas 首切片的关键语义分叉（防跨家族串味）
 
 - 分页：lab **1-based 切片**（CT T11 仲裁）；saas 0 基——分页语义分叉在案

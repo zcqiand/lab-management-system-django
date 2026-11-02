@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from django.urls import path
 
-from inspection import catalog_views, param_interface_views, views
+from inspection import catalog_views, param_interface_views, report_name_views, views
 
 urlpatterns = [
     # 基础数据码表 M04.F06-F09（4 实体同构 CRUD，16 op）
@@ -40,4 +40,10 @@ urlpatterns = [
     path("param-interfaces/links", param_interface_views.param_interface_links),
     path("param-interfaces", param_interface_views.param_interfaces),
     path("param-interfaces/<str:code>", param_interface_views.param_interface_detail),
+    # 报告名称 M06.F07（CRUD 5 + 3 组 junction 9 op）；静态 links 路径在 <str:code> 前
+    path("report-names/links/object", report_name_views.object_links),
+    path("report-names/links/standard", report_name_views.standard_links),
+    path("report-names/links/parameter", report_name_views.parameter_links),
+    path("report-names", report_name_views.report_names),
+    path("report-names/<str:code>", report_name_views.report_name_detail),
 ]

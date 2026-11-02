@@ -1,0 +1,86 @@
+{
+  "project": "lab-management-system-django",
+  "mirror": true,
+  "approved": false,
+  "summary": "REQ-2026-035 T8 报告名称域落地：M06.F07 8 子项登记 + 父行与 M06.F04.I05-I07 unlink 开发中翻转",
+  "reason": "REQ-2026-035 T8",
+  "changes": [
+    {
+      "id": "M06.F07.I01",
+      "action": "新增",
+      "name": "报告名称列表",
+      "reason": "REQ-2026-035 T8"
+    },
+    {
+      "id": "M06.F07.I02",
+      "action": "新增",
+      "name": "报告名称详情",
+      "reason": "REQ-2026-035 T8"
+    },
+    {
+      "id": "M06.F07.I03",
+      "action": "新增",
+      "name": "创建报告名称",
+      "reason": "REQ-2026-035 T8"
+    },
+    {
+      "id": "M06.F07.I04",
+      "action": "新增",
+      "name": "更新报告名称",
+      "reason": "REQ-2026-035 T8"
+    },
+    {
+      "id": "M06.F07.I05",
+      "action": "新增",
+      "name": "删除报告名称",
+      "reason": "REQ-2026-035 T8"
+    },
+    {
+      "id": "M06.F07.I06",
+      "action": "新增",
+      "name": "项目↔报告名称 link",
+      "reason": "REQ-2026-035 T8"
+    },
+    {
+      "id": "M06.F07.I07",
+      "action": "新增",
+      "name": "报告名称↔标准 link",
+      "reason": "REQ-2026-035 T8"
+    },
+    {
+      "id": "M06.F07.I08",
+      "action": "新增",
+      "name": "报告名称↔参数 link",
+      "reason": "REQ-2026-035 T8"
+    },
+    {
+      "id": "M06.F07",
+      "action": "变更",
+      "name": "报告名称",
+      "reason": "REQ-2026-035 T8 子项落地父行翻转开发中"
+    },
+    {
+      "id": "M06.F04.I05",
+      "action": "变更",
+      "name": "项目↔报告名称 unlink",
+      "reason": "REQ-2026-035 T8 实现翻转开发中"
+    },
+    {
+      "id": "M06.F04.I06",
+      "action": "变更",
+      "name": "报告名称↔参数 unlink",
+      "reason": "REQ-2026-035 T8 实现翻转开发中"
+    },
+    {
+      "id": "M06.F04.I07",
+      "action": "变更",
+      "name": "报告名称↔标准 unlink",
+      "reason": "REQ-2026-035 T8 实现翻转开发中"
+    }
+  ],
+  "sync_files": [
+    "docs/design/design-function-map.md"
+  ],
+  "base_sha": "6cdcd3200c14e81a",
+  "applied_at": "2026-11-03T01:22:56+0800"
+}
