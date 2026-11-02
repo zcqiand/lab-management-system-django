@@ -1,28 +1,28 @@
 {
   "schema": 1,
   "project": "lab-management-system-django",
-  "current_task": "REQ-2026-030 已收官（初取 029 撞 saas-angular 已改 030）；5.127① git init + submodule 注册完成（suite b34d425），strict codegen 转真",
+  "current_task": "REQ-2026-035 全量业务切片收官（2026-11-03）：120 op 全实现 + CT 注册 + 七后端 live 784/784，Final review C-1/I-1 已修；待人：验收签注 + 树 GA 翻转",
   "done": [
-    "REQ-2026-030：M02.F01 五 op 落地（decode-only auth + 401 信封 handler + 1-based 分页切片 + 租户收口 + keyword/status 过滤 + 23505→400），24 tests 全绿，红灯证据 20 failed 在案",
-    "codegen 管线：gen-shared.sh（'=' 键 sanitize 落 _work/ + datamodel-codegen modular 目录输出）+ gen-manifest.py；生成区 src/lab_management_system_django/contract/models/ + generated/api_manifest.json",
-    "树：M02.F01 + I01-I05 镜像登记→开发中（mirror 免批双令牌已焚）；trace.json 24 tests / 19 fn",
-    "5.127① 收官（2026-11-01）：GitHub 双仓已建（public 同兄弟仓，存储凭据 API 创建），本仓 master 已推，suite b34d425 登记 gitlink + .gitmodules（branch=master），strict codegen SKIP→真 PASS（本仓 3 files idempotent），注册后全门复跑 exit 0",
-    ".gitignore 对齐家族口径：session.json/tree-change.applied.json 入库，tree-change.json 不入",
-    "遗留项入 tracker：docs/superpowers/plans/2026-09-18-family-leftovers-remediation.md 5.127（①已勾，②③④挂账）"
+    "REQ-2026-035 T1-T11 全落地：T1 entity DB-First 24 表 / T2 authn native-login 代理 saas IdP / T3 检测字典 28 op / T4 码表 16 op / T5 接样单 14 op / T6 样品+检测记录 12 op / T7 参数界面 8 op / T8 报告名称 14 op / T9 技术要求+计算方法 10 op / T10 汇总 2 op + _frontend-bind 占位 / T11 /health+CORS+CT 注册 django:5213",
+    "route-parity 120 op 双向零 diff（EXTRA_ROUTE_ALLOWLIST 仅 /health）；codegen.idempotent strict exit 0；gate L0-L5 全绿；rails 交叉绿",
+    "CT live 七目标 784/784 收敛（trace mode=live 70 fn；全后端共本机 lab_dev 127.0.0.1:54321；saas_dev 空库需 shared seed-db.mjs 重灌）",
+    "Final review（opus 全分支）红先修复（django 7bc8493）：C-1 码表 create 收敛 rails 裸 create（撞码 400 不再 merge/跨租户劫持，fastapi merge=在册分叉不随）+ I-1 全局 handler 补 IntegrityError→400 constraint violation；全量 117/117 + ruff + mypy strict 绿",
+    "Deferred minors ×3 在 tracker 5.136：parity 未断言 SLICE 完整性 / 四处 or True 恒真断言 / 码表 update None-skip vs rails truthy-skip",
+    "三仓已推：django 756f7f4..30cd717 / lab CT 2450ebd+7de6c2a / suite 075e3e4..3f609de（含 gitlink+tracker 5.128 勾销+5.136 收官条）"
   ],
-  "next": "CT TARGETS 注册（django=5213）随 live 里程碑批（tracker 5.127②，全 CRUD 已覆盖 CT 测试面）；shared @doc 陈旧描述更新须人批（5.127③）",
+  "next": "等人：①REQ-2026-035 §5 人工验收签注 ②树 GA 翻转（M04/M06 等 70 fn 开发中→GA，ADR-0042 免批前提不满足须人批：tree_change --report → 人 --approve → 状态翻转）。若人批 GA，用 python scripts/tree_change.py -p lab-management-system-django --report 起步",
   "open_questions": [
-    "shared 契约 lab contracts @doc「仅回显不切片」陈旧描述更新须人批（CT T11 已实证 1-based）",
-    "CT TARGETS 注册（django=5213）随 live 里程碑批（tracker 5.124/5.127②）"
+    "fastapi 码表 merge+租户改写与 django/rails/springboot 裸 create 语义分叉——家族统一收敛批候选（design-map 分叉条在案）",
+    "PostToolUse 树焚 hook 连续两批静默（T9/T11 手动补焚）——候排查批",
+    "CT live 落库清场义务机器化（5.133 判 CT 侧已有 cleanup-pg.ts，但 lab_test e2e-ct-* 残留通道仍有观察项）"
   ],
   "dont": [
     "不要改 .harness/stack.json 让门变松",
     "不要给 skip 的测试挂功能 ID",
-    "不要 pip install -e .（config 顶层包双仓 sys.path 撞名）；依赖装全局 python",
-    "不要给 src/ 放 __init__.py（只允许仓身份包目录内有）",
-    "可空列必须 null=True：Model.__init__ 对非 null 文本字段缺省填 ''，空串撞 contracts_specialty_fk（25203）",
-    "pytest 裸跑必须带 -p env_bootstrap（settings fail-fast 早于 conftest）",
-    "分页别照 saas 0 基抄：lab 家族 1-based（CT T11 仲裁）"
-  ],
-  "last_gate_passed_at": "2026-11-01"
+    "不要手写 .state/trace.json（必须 trace_cmd 产出）",
+    "复合 PK 表（TR/CM/junction）禁 row.save()——只走 filter(全键).update/delete/create",
+    "码表 create 已收敛裸 create→400，别把 fastapi merge 语义搬回来",
+    "测试里撞码/FK 违规的 POST 要包嵌套 transaction.atomic()+set_rollback(True)，否则 IntegrityError 毒化 pytest-django 外层事务（TransactionManagementError）",
+    "起服/runserver 需 SILENCED_SYSTEM_CHECKS=models.E026（已入 settings）+ env 全集显式导出（.env 文件 python 栈不自动加载）"
+  ]
 }
