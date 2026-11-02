@@ -1,10 +1,11 @@
 """T4 基础数据码表 red-first：brands/models/specs/grades 4 实体同构 CRUD（16 端点）。
 
-语义镜像 fastapi impl/inspection_catalog_impl.py（其注释标注参照 lab-springboot
-CatalogService + InspectionCatalogMapper）：
+语义镜像 rails app/services/catalog/catalog_service.rb（Final review C-1 裁定收敛，
+fastapi merge 语义为家族在册分叉不随）：
 - tenant 收口：list 按 tenant 等值（claim tenant_id 优先，缺省 directory 默认租户）；
   update/delete 按 tenant+code 定位，他人租户行 miss → 404（隔离）
-- create = JPA save() merge：撞 code 全字段覆盖（含 createdAt=now 刷新），sortOrder 默认 0
+- create = 裸 create（rails create! 同款）：撞全局 code 唯一约束 → IntegrityError
+  → 全局 handler 400 "constraint violation"（无 merge，无跨租户劫持），sortOrder 默认 0
 - update = PATCH（None 跳过）+ updatedAt 刷新；无空载荷 400 特判无（跳过即 no-op）
 - delete 命中 204 / miss 404；list 回显域分页：items 全量、page??1、pageSize??len、
   total=len，ORDER BY sort_order,code；keyword lower contains code/name
@@ -147,27 +148,35 @@ def test_create_defaults_and_missing_name_400() -> None:
 
 @pytest.mark.django_db
 @pytest.mark.fn("M04.F06.I02")
-def test_same_code_post_overwrites_all_fields() -> None:
-    """JPA save()=merge：撞 code 全字段覆盖（含 createdAt 刷新、sortOrder 重置默认）。"""
+def test_same_code_post_conflict_400_no_tenant_hijack() -> None:
+    """Final review C-1 修复红测试：rails/springboot 参照收敛——裸 create 撞全局 code
+    唯一约束 → 400 constraint violation（无 merge，且无跨租户劫持——原 merge 路径
+    会把他人租户行 tenant_id 改写劫持）。撞码 POST 包嵌套 atomic + set_rollback：
+    IntegrityError 会毒化 pytest-django 外层事务，需 savepoint 回滚收口。"""
+    from django.db import transaction
+
     c = client()
     code = uniq("MD")
-    r = c.post(
-        "/api/catalog/models",
-        {"code": code, "name": f"{TOKEN} 一", "sortOrder": 5, "remark": "old"},
-        format="json",
-    )
+    r = c.post("/api/catalog/models", {"code": code, "name": f"{TOKEN} 一"}, format="json")
     assert r.status_code == 200
-    first_created = r.json()["createdAt"]
-    time.sleep(0.01)
-    r = c.post("/api/catalog/models", {"code": code, "name": f"{TOKEN} 二"}, format="json")
-    assert r.status_code == 200
-    body = r.json()
-    assert body["name"] == f"{TOKEN} 二"
-    assert "remark" not in body  # 覆写 None → 键缺席
-    assert body["sortOrder"] == 0  # 缺省重置 0
-    assert body["createdAt"] != first_created  # createdAt=now 刷新（merge 覆写）
+    # 同租户撞 code → 400（rails RecordNotUnique → 400 constraint violation 镜像）
+    with transaction.atomic():
+        r = c.post("/api/catalog/models", {"code": code, "name": f"{TOKEN} 二"}, format="json")
+        assert r.status_code == 400, r.content
+        body = r.json()
+        assert body["code"] == "BAD_REQUEST"
+        assert "constraint violation" in body["message"]
+        transaction.set_rollback(True)
+    # 跨租户撞 code → 同样 400（原 merge 路径会 200 并劫持改写他人租户行）
+    with transaction.atomic():
+        other = client({"sub": "bob", "tenant_id": "TENANT-002"})
+        r = other.post("/api/catalog/models", {"code": code, "name": "hijack"}, format="json")
+        assert r.status_code == 400, r.content
+        transaction.set_rollback(True)
+    # 原行原封不动（归属/字段不变）
     r = c.get("/api/catalog/models", {"keyword": TOKEN})
     assert r.json()["total"] == 1
+    assert r.json()["items"][0]["name"] == f"{TOKEN} 一"
 
 
 @pytest.mark.django_db

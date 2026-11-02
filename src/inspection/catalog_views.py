@@ -1,13 +1,15 @@
-"""基础数据码表 16 端点 views —— fastapi impl/inspection_catalog_impl.py 逐条镜像
-（其注释标注参照 lab-springboot CatalogService + InspectionCatalogMapper）。
+"""基础数据码表 16 端点 views —— rails app/services/catalog/catalog_service.rb 逐条
+镜像（T4 初版镜像 fastapi impl/inspection_catalog_impl.py，Final review C-1 裁定
+改随 rails/springboot 参照：撞全局 code PK 收敛 400，不 merge 不劫持租户）。
 
 4 表（models=M04.F06 型号 / specs=F07 规格 / grades=F08 等级 / brands=F09 牌号）
 同构，family 表驱动合并（fastapi _Family 同款）：
 
 - tenant 收口：list 按 tenant 等值；update/delete 按 tenant+code 定位，他人租户行
   miss → 404（隔离）
-- create = JPA save() merge：撞 code 全字段覆盖（含 createdAt=now 刷新），sortOrder
-  默认 0；返回 200
+- create = 裸 create（rails create! 同款）：撞全局 code 唯一约束 → IntegrityError
+  → 全局 handler 400 "constraint violation"（sortOrder 默认 0）；返回 200。
+  fastapi 的 merge+租户改写语义为家族在册分叉（跨租户撞码会劫持他人租户行）不随
 - update = PATCH（None 跳过）+ updatedAt 刷新
 - delete 命中 204 / miss 404
 - list 回显域分页：items 全量、page??1、pageSize??len、total=len，ORDER BY
@@ -125,33 +127,24 @@ def _list(fam: _Family, request: Request, claims: dict[str, Any]) -> Response:
 
 
 def _create(fam: _Family, request: Request, claims: dict[str, Any]) -> Response:
-    """fromCreate + save()=merge 镜像：撞 code 全字段覆盖（含 createdAt=now）。"""
+    """裸 create（rails create! 镜像）：撞全局 code 唯一约束 IntegrityError →
+    全局 handler 400 "constraint violation"（Final review C-1：不 merge——原
+    filter(code) 探测会跨租户劫持他人租户行；fastapi merge 分叉不随）。"""
     body = _body(request)
     require_non_blank(code=body.get("code"), name=body.get("name"))
     tenant = current_tenant_or_default(claims)
     now = now_iso()
     sort_order = _int(body.get("sortOrder"))
-    row = fam.entity.objects.filter(code=body["code"]).first()
-    if row is None:
-        row = fam.entity.objects.create(
-            code=body["code"],
-            tenant_id=tenant,
-            inspection_object_code=body.get("inspectionObjectCode"),
-            name=body["name"],
-            remark=body.get("remark"),
-            sort_order=sort_order if sort_order is not None else 0,
-            created_at=now,
-            updated_at=now,
-        )
-    else:
-        row.tenant_id = tenant
-        row.inspection_object_code = body.get("inspectionObjectCode")
-        row.name = body["name"]
-        row.remark = body.get("remark")
-        row.sort_order = sort_order if sort_order is not None else 0
-        row.created_at = now
-        row.updated_at = now
-        row.save()
+    row = fam.entity.objects.create(
+        code=body["code"],
+        tenant_id=tenant,
+        inspection_object_code=body.get("inspectionObjectCode"),
+        name=body["name"],
+        remark=body.get("remark"),
+        sort_order=sort_order if sort_order is not None else 0,
+        created_at=now,
+        updated_at=now,
+    )
     return Response(_dto(row), status=200)
 
 

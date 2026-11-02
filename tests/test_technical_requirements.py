@@ -238,3 +238,22 @@ def test_tr_get_update_delete_tenant_isolation() -> None:
     assert c.delete(path).status_code == 204
     assert c.get(path).status_code == 404
     assert c.delete(path).status_code == 404
+
+
+@pytest.mark.django_db
+@pytest.mark.fn("M06.F06.I03")
+def test_tr_create_bad_fk_400_constraint_violation() -> None:
+    """Final review I-1 修复红测试：FK 引用不存在 → 400 constraint violation
+    （rails application_controller InvalidForeignKey rescue 全局镜像；
+    修复前 IntegrityError 落 DRF 默认 handler → 500 INTERNAL_ERROR）。"""
+    obj, param, _std = make_parents()
+    c = client()
+    r = c.post(
+        "/api/technical-requirements",
+        tr_payload(obj, param, "NO-SUCH-STD"),
+        format="json",
+    )
+    assert r.status_code == 400, r.content
+    body = r.json()
+    assert body["code"] == "BAD_REQUEST"
+    assert "constraint violation" in body["message"]

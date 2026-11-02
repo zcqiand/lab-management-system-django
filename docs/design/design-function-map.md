@@ -20,7 +20,7 @@
 | M06.F02.I01-I10 | /api/inspection/objects(±/{code}) + links/specialty-object + links/object-parameter | inspection_objects / specialty_object_links / object_parameter_links | 项目 CRUD + 两 junction（object-parameter 的 qualification_level 入 PK、默认 QUALIFIED） |
 | M06.F03.I01-I06, I08 | /api/inspection/parameters(±/{code}) + links/standard-parameter | inspection_parameters / standard_parameter_links | 参数 CRUD（aliases jsonb）+ 标准↔参数 junction（纯键 PK） |
 | M06.F04.I01-I04 | /api/inspection/standards(±/{code}) | inspection_standards | 标准 CRUD（status: active/superseded/draft，默认 ACTIVE） |
-| M04.F06-F09.I01-I04 | /api/catalog/{models,specs,grades,brands}(±/{code}) | inspection_models/specs/grades/brands | 码表 4 实体同构 CRUD（16 op）：tenant 收口（claim 优先缺省 directory 默认租户 TENANT-001）、create=merge 全覆写（createdAt 刷新）、update=PATCH、回显域分页（items 全量，(sort_order, code) 排序）、他人租户行 404 境外不可见、DELETE miss 404 |
+| M04.F06-F09.I01-I04 | /api/catalog/{models,specs,grades,brands}(±/{code}) | inspection_models/specs/grades/brands | 码表 4 实体同构 CRUD（16 op）：tenant 收口（claim 优先缺省 directory 默认租户 TENANT-001）、create=**裸 create**（rails create! 参照，撞全局 code 唯一约束 IntegrityError→全局 handler 400 constraint violation；Final review C-1 收敛——原 fastapi merge 路径会跨租户劫持，见下方分叉条）、update=PATCH、回显域分页（items 全量，(sort_order, code) 排序）、他人租户行 404 境外不可见、DELETE miss 404 |
 
 | M03.F01-F08（接样单域 14 op） | /api/receipts(±/{id}±/{id}/history) + task + 七段 act | sample_receipts | rails 镜像（report_flow_service/sample_receipt_service 逐条）：tenant 收口、create=「R-<uuid>」+ flow_status=receiving + contract FK 校验 404、update=PATCH（LIST_FIELDS 跳 None + jsonb 三字段非 None 即 Array(v||[]) 标量包单元素数组）、list 回显信封（page??1/pageSize??20/total=len，updated_at desc + commission_code asc）、5.57 三态 filter、七段 act（operator 整批 400 先校验、per-id err 不整批 5xx、archived 仅 submit 自转移 audit、submit 写/withdraw 清/return 保留 lastSubmittedBy、history entry action/from/to/operator/reason/at）、DTO NON_NULL 递归（render_camel 镜像）、jsonb 键恒在（空时 []） |
 
@@ -44,6 +44,7 @@
 - 错误体：两家族同形 `{code,message}`（NOT_FOUND / BAD_REQUEST / UNAUTHORIZED）
 - 字典域鉴权：M06 检测字典域为平台级实体（无 tenant 列）→ decode-only bearer **无租户收口**，401 `INVALID_CREDENTIALS "Bearer token required"`；contracts 域 BearerAuthentication 需 tenant_id claim + `UNAUTHORIZED` 信封——**两个鉴权面并存**，勿串
 - 字典域分页：无切片回显信封（items=全量过滤结果，page/pageSize 纯回显），按 (sort_order, code) 排序；与 contracts 域 1-based 切片**不同**——共享 op 级定稿表（5.127③）为准
+- **码表 create 分叉（Final review C-1 收敛）**：django/rails/springboot 三仓=裸 create 撞全局 code 唯一约束→400 constraint violation；fastapi=merge+租户改写（撞码 200 覆写他人租户行）——**fastapi 为家族在册分叉不随**（shared op 无 merge 语义 doc，树文本静默，rails 参照实现 wins，同 5.127③ 裁定），家族统一收敛批另挂账
 - 参数界面域 pageSize 缺省=len(items)（rails 分叉，勿套 receipts 的 20）；unlink 幂等 no-op 204（rails `&.destroy!` 参照实现；树文本「404 if 不存在」为旧注记不采用，同 act-422 裁定）
 - **复合 PK 表禁 row.save()/.delete()**：Django legacy 多 `primary_key=True` 只认首列作 `Meta.pk`，`row.save()` 的 UPDATE WHERE 只按首列会误伤共享首键的兄弟行（T9 实锤：同 object 三行被连环覆写）。TR/CM create-merge/update/delete 一律走 `queryset.filter(全键).update/delete/create`，junction upsert 同收（helpers.upsert_junction 已改 query.update 路径——T7/T8 已落地 junction 的 update 路径带同款隐患，本批一并闭合）
 - 技术要求/计算方法 list 均**裸数组**（rails render_camel 直出，非字典信封）；CM update truthy/strict 双判定（truthy 真值才写、strict 非 None 即写，specimenCount/sortOrder 可写 0）
