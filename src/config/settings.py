@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "inspection",
     "receipts",
     "samples",
+    "summary",
 ]
 
 MIDDLEWARE = [

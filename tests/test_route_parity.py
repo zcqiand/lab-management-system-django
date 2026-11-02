@@ -98,6 +98,10 @@ SLICE = {
     f"GET /api/technical-requirements/{_TR}": "M06.F06.I02",
     f"PUT /api/technical-requirements/{_TR}": "M06.F06.I04",
     f"DELETE /api/technical-requirements/{_TR}": "M06.F06.I05",
+    # T10 报告汇总/仪表盘 2 op + _frontend-bind 占位端点（go 同款锚定已上线 ID）
+    "GET /api/summary": "M05.F01.I01",
+    "GET /api/summary/stats": "M05.F01.I06",
+    "GET /api/_frontend-bind/snapshot": "M03.F01.I02",
     # T4 基础数据码表域 16 op（4 实体同构 CRUD）
     "GET /api/catalog/brands": "M04.F09.I01",
     "POST /api/catalog/brands": "M04.F09.I02",

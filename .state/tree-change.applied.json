@@ -2,85 +2,37 @@
   "project": "lab-management-system-django",
   "mirror": true,
   "approved": false,
-  "summary": "REQ-2026-035 T9 技术要求/计算方法域落地：M06.F06 + M06.F05 各 5 子项登记，父行翻转开发中",
-  "reason": "REQ-2026-035 T9",
+  "summary": "REQ-2026-035 T10 报告汇总/仪表盘落地：M05.F01.I01/I06 登记 + M05 模块与 M05.F01 父行翻转开发中",
+  "reason": "REQ-2026-035 T10",
   "sync_files": [
     "docs/design/design-function-map.md"
   ],
   "changes": [
     {
-      "id": "M06.F06.I01",
+      "id": "M05.F01.I01",
       "action": "新增",
-      "name": "技术要求列表",
-      "reason": "REQ-2026-035 T9"
+      "name": "报告汇总",
+      "reason": "REQ-2026-035 T10"
     },
     {
-      "id": "M06.F06.I02",
+      "id": "M05.F01.I06",
       "action": "新增",
-      "name": "技术要求详情",
-      "reason": "REQ-2026-035 T9"
+      "name": "仪表盘统计基础端点",
+      "reason": "REQ-2026-035 T10"
     },
     {
-      "id": "M06.F06.I03",
-      "action": "新增",
-      "name": "创建技术要求",
-      "reason": "REQ-2026-035 T9"
-    },
-    {
-      "id": "M06.F06.I04",
-      "action": "新增",
-      "name": "更新技术要求",
-      "reason": "REQ-2026-035 T9"
-    },
-    {
-      "id": "M06.F06.I05",
-      "action": "新增",
-      "name": "删除技术要求",
-      "reason": "REQ-2026-035 T9"
-    },
-    {
-      "id": "M06.F05.I01",
-      "action": "新增",
-      "name": "计算方法列表",
-      "reason": "REQ-2026-035 T9"
-    },
-    {
-      "id": "M06.F05.I02",
-      "action": "新增",
-      "name": "计算方法详情",
-      "reason": "REQ-2026-035 T9"
-    },
-    {
-      "id": "M06.F05.I03",
-      "action": "新增",
-      "name": "创建计算方法",
-      "reason": "REQ-2026-035 T9"
-    },
-    {
-      "id": "M06.F05.I04",
-      "action": "新增",
-      "name": "更新计算方法",
-      "reason": "REQ-2026-035 T9"
-    },
-    {
-      "id": "M06.F05.I05",
-      "action": "新增",
-      "name": "删除计算方法",
-      "reason": "REQ-2026-035 T9"
-    },
-    {
-      "id": "M06.F06",
+      "id": "M05",
       "action": "变更",
-      "name": "技术要求",
-      "reason": "REQ-2026-035 T9 实现翻转开发中"
+      "name": "数据统计",
+      "reason": "REQ-2026-035 T10 实现翻转开发中"
     },
     {
-      "id": "M06.F05",
+      "id": "M05.F01",
       "action": "变更",
-      "name": "计算方法",
-      "reason": "REQ-2026-035 T9 实现翻转开发中"
+      "name": "报告汇总",
+      "reason": "REQ-2026-035 T10 实现翻转开发中"
     }
   ],
-  "base_sha": "ec8352125143db01",
-  "applied_at": "2026-11-03T01:42:23+0800"
+  "base_sha": "a40d38102a682d86",
+  "applied_at": "2026-11-03T01:50:07+0800"
 }

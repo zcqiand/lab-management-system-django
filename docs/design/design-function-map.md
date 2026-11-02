@@ -47,3 +47,5 @@
 - 参数界面域 pageSize 缺省=len(items)（rails 分叉，勿套 receipts 的 20）；unlink 幂等 no-op 204（rails `&.destroy!` 参照实现；树文本「404 if 不存在」为旧注记不采用，同 act-422 裁定）
 - **复合 PK 表禁 row.save()/.delete()**：Django legacy 多 `primary_key=True` 只认首列作 `Meta.pk`，`row.save()` 的 UPDATE WHERE 只按首列会误伤共享首键的兄弟行（T9 实锤：同 object 三行被连环覆写）。TR/CM create-merge/update/delete 一律走 `queryset.filter(全键).update/delete/create`，junction upsert 同收（helpers.upsert_junction 已改 query.update 路径——T7/T8 已落地 junction 的 update 路径带同款隐患，本批一并闭合）
 - 技术要求/计算方法 list 均**裸数组**（rails render_camel 直出，非字典信封）；CM update truthy/strict 双判定（truthy 真值才写、strict 非 None 即写，specimenCount/sortOrder 可写 0）
+- 汇总域：/api/summary 回显 summaryName/columns(6 固定)/rows（nil→"" to_s 镜像，dateFrom/dateTo 走 commission_date 字典序）；/api/summary/stats **wire 键直出不走 camel**（funnelByStage 的 pending_collect 是 openapi 生成名，不得折叠成 pendingCollect）；「今天」与 created_at 同钟取 UTC（rails 2026-10-21 SummaryApiTest 实证红镜像）；qualifiedRateByMaterial 码表 summaryName 关键词归类 concrete/rebar/sand，rate 三位小数半入
+- _frontend-bind/snapshot：生成器 DTO 占位端点（rails/go 同款裁定）——挂认证，登录后 404 NOT_FOUND、匿名 401；**永久不接**，501/404 即符合契约

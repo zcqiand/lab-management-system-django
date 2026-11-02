@@ -41,7 +41,7 @@
 | M02 | 资源管理 | 合同管理 | 规划 |
 | M03 | 试验过程管理 | 接样 → 任务分配 → 数据录入 → 报告审核 → 批准 → 发放 → 归档 | 规划 |
 | M04 | 基础数据 | 型号/规格/等级/牌号维护 | 规划 |
-| M05 | 数据统计 | 报告汇总表（按报告名称） | 规划 |
+| M05 | 数据统计 | 报告汇总表（按报告名称） | 开发中 |
 | M06 | 检测能力 | 检测专项/项目/参数/标准/计算方法/技术要求/报告名称/参数界面 | 规划 |
 
 ---
@@ -234,7 +234,14 @@
 
 | 功能 ID | 功能名称 | 说明 | 状态 |
 |---|---|---|---|
-| M05.F01 | 报告汇总 | 按报告类别输出试验报告汇总表 | 规划 |
+| M05.F01 | 报告汇总 | 按报告类别输出试验报告汇总表 | 开发中 |
+
+### M05.F01 报告汇总
+
+| 子项 ID | 名称 | 类型 | 交付 | 说明 | 状态 |
+|---|---|---|---|---|---|
+| M05.F01.I01 | 报告汇总 | 查询 | 前端+后端 | GET /api/summary?categoryCode=&dateFrom=&dateTo=：categoryCode=ALL 不过滤，否则按报告类别过滤当前租户接样单；输出 SummaryData{summaryName, columns(6), rows} | 开发中 |
+| M05.F01.I06 | 仪表盘统计基础端点 | 查询 | 前端+后端 | GET /api/summary/stats 基础字段：contractCount/receiptCount/sampleCount + 报告状态 3 桶（draft=receiving+task+data_entry；reviewing=review+approval；issued=issuance+archived）+ pendingTaskCount。ADR-0033 阶段二从后端仓 M05.F02.I01 下沉 BASE（四方已上线的事实先行入树，I03/I04 是本端点的扩展字段） | 开发中 |
 
 
 ## M06 检测能力
