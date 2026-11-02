@@ -24,6 +24,10 @@
 
 | M03.F01-F08（接样单域 14 op） | /api/receipts(±/{id}±/{id}/history) + task + 七段 act | sample_receipts | rails 镜像（report_flow_service/sample_receipt_service 逐条）：tenant 收口、create=「R-<uuid>」+ flow_status=receiving + contract FK 校验 404、update=PATCH（LIST_FIELDS 跳 None + jsonb 三字段非 None 即 Array(v||[]) 标量包单元素数组）、list 回显信封（page??1/pageSize??20/total=len，updated_at desc + commission_code asc）、5.57 三态 filter、七段 act（operator 整批 400 先校验、per-id err 不整批 5xx、archived 仅 submit 自转移 audit、submit 写/withdraw 清/return 保留 lastSubmittedBy、history entry action/from/to/operator/reason/at）、DTO NON_NULL 递归（render_camel 镜像）、jsonb 键恒在（空时 []） |
 
+| M03.F03.I01-I05 + M03.F01.I07（样品 6 op） | /api/samples(±/{id}±/{id}/ext) | samples | rails SampleService 镜像：tenant 收口 + receipt FK 显式校验（miss→404 "Receipt not found"，不 FK→400）、keyword lower contains sample_code/sample_name、order created_at desc + sample_code asc、create=「S-<uuid>」+ ext 默认 {}、update=PATCH 跳 None（ext 非 None 才替换）、PUT /{id}/ext=整体替换且 ext 必填 400（5.89）、delete 204、DTO NON_NULL（ext 键恒在空 {}） |
+
+| M03.F03.I06-I11（检测记录 6 op） | /api/test-records(±/{id}) + /{id}/verdict | test_records | rails TestRecordService 镜像：tenant 收口、create 四必填 400（sampleId/parameterCode/requirement/result，rails 字面量）+ sample/parameter/standard FK 走 DB 约束（IntegrityError→400，savepoint 包裹防事务污染）、order updated_at desc + id asc、update=PATCH 跳 None、PATCH /{id}/verdict 直写可置 null（NON_NULL→键不在）、id=「TR-<uuid>」 |
+
 ## 与 saas 首切片的关键语义分叉（防跨家族串味）
 
 - 分页：lab **1-based 切片**（CT T11 仲裁）；saas 0 基——分页语义分叉在案

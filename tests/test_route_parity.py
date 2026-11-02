@@ -50,6 +50,19 @@ SLICE = {
     "POST /api/receipts/approve/act": "M03.F06.I05",
     "POST /api/receipts/issuance/act": "M03.F07.I05",
     "POST /api/receipts/archived/act": "M03.F08.I05",
+    # T6 样品 + 检测记录域 12 op（ext 补录锚 M03.F01.I07；verdict PATCH 见 .tsp 2026-09-18 修正）
+    "GET /api/samples": "M03.F03.I01",
+    "POST /api/samples": "M03.F03.I03",
+    "GET /api/samples/{id}": "M03.F03.I02",
+    "PUT /api/samples/{id}": "M03.F03.I04",
+    "DELETE /api/samples/{id}": "M03.F03.I05",
+    "PUT /api/samples/{id}/ext": "M03.F01.I07",
+    "GET /api/test-records": "M03.F03.I06",
+    "POST /api/test-records": "M03.F03.I08",
+    "GET /api/test-records/{id}": "M03.F03.I07",
+    "PUT /api/test-records/{id}": "M03.F03.I09",
+    "DELETE /api/test-records/{id}": "M03.F03.I10",
+    "PATCH /api/test-records/{id}/verdict": "M03.F03.I11",
     # T4 基础数据码表域 16 op（4 实体同构 CRUD）
     "GET /api/catalog/brands": "M04.F09.I01",
     "POST /api/catalog/brands": "M04.F09.I02",
@@ -112,6 +125,8 @@ def _normalize(route: str) -> str:
         ("/" + route)
         .replace("<str:contract_id>", "{id}")
         .replace("<str:receipt_id>", "{id}")
+        .replace("<str:sample_id>", "{id}")
+        .replace("<str:record_id>", "{id}")
         .replace("<str:code>", "{code}")
         .rstrip("/")
     )

@@ -132,6 +132,7 @@
 | M03.F01.I04 | 更新接样单 | 接口 | 前端+后端 | PUT /api/receipts/{id}：PATCH 语义 | 开发中 |
 | M03.F01.I05 | 删除接样单 | 接口 | 前端+后端 | DELETE /api/receipts/{id}：CASCADE 删除下属 samples | 开发中 |
 | M03.F01.I06 | 接样单流程历史 | 接口 | 前端+后端 | GET /api/receipts/{id}/history：返回 FlowHistoryEntry[]（jsonb 展开为 List） | 开发中 |
+| M03.F01.I07 | 接样单 ext 字段补录 | 接口 | 前端+后端 | PUT /api/samples/{id}/ext：UpdateSampleExtRequest{ext} 按当前类别 extFields 补录持久化到 Sample.ext | 开发中 |
 | M03.F01.I08 | 接样-提交 | 接口 | 前端+后端 | POST /api/receipts/receiving/act，body.action={SUBMIT、RETURN、WITHDRAW} 三动作统一（2026-09-18：I09 退回/I10 撤回语义并入本行；RETURN 前置阶段退回无前置则 422、WITHDRAW 提交人撤回回到原阶段；7 阶段全 act 模式） | 开发中 |
 
 ### M03.F02 任务分配
@@ -141,10 +142,21 @@
 | M03.F02.I01 | 任务分配 | 接口 | 前端+后端 | PUT /api/receipts/{id}/task：AssignTaskRequest 设 assigneeId/Name/plannedTestDate；非 receiving 阶段不自动 advance | 开发中 |
 | M03.F02.I05 | 任务分配-提交 | 接口 | 前端+后端 | POST /api/receipts/assigning/act，body.action={SUBMIT、RETURN、WITHDRAW} 三动作统一（2026-09-18：I06 退回/I07 撤回语义并入本行；RETURN 退回到 receiving；7 阶段全 act 模式） | 开发中 |
 
-### M03.F03 数据录入（T5 仅收 act 端点；samples/test-records CRUD 属 T6）
+### M03.F03 数据录入
 
 | 子项 ID | 名称 | 类型 | 交付 | 说明 | 状态 |
 |---|---|---|---|---|---|
+| M03.F03.I01 | 样品列表 | 接口 | 前端+后端 | GET /api/samples?receiptId=&keyword=：tenant + 2 过滤 | 开发中 |
+| M03.F03.I02 | 样品详情 | 接口 | 前端+后端 | GET /api/samples/{id} | 开发中 |
+| M03.F03.I03 | 创建样品 | 接口 | 前端+后端 | POST /api/samples：receipt_id FK 必存在；ext 默认 {} | 开发中 |
+| M03.F03.I04 | 更新样品 | 接口 | 前端+后端 | PUT /api/samples/{id}：PATCH 语义 | 开发中 |
+| M03.F03.I05 | 删除样品 | 接口 | 前端+后端 | DELETE /api/samples/{id}：204 | 开发中 |
+| M03.F03.I06 | 检测记录列表 | 接口 | 前端+后端 | GET /api/test-records?sampleId=&page=&pageSize=：tenant 收口 + sampleId 过滤 + 分页；data-fn=nextjs/react/vue 仓 test-records 页面 | 开发中 |
+| M03.F03.I07 | 检测记录详情 | 接口 | 前端+后端 | GET /api/test-records/{id}：返回 TestRecord | 开发中 |
+| M03.F03.I08 | 创建检测记录 | 接口 | 前端+后端 | POST /api/test-records：sampleId/parameterCode/requirement/result 必填；tenant 从 token claim 注入 | 开发中 |
+| M03.F03.I09 | 更新检测记录 | 接口 | 前端+后端 | PUT /api/test-records/{id}：PATCH 语义，未传字段保留 | 开发中 |
+| M03.F03.I10 | 删除检测记录 | 接口 | 前端+后端 | DELETE /api/test-records/{id}：204 if exists | 开发中 |
+| M03.F03.I11 | 检测记录改判 | 接口 | 前端+后端 | PATCH /api/test-records/{id}/verdict：人工改判（2026-09-18 以 .tsp 为准修正动词，原误写 PUT；M03.F05/F06 报告流程可触发） | 开发中 |
 | M03.F03.I12 | 数据录入-提交 | 接口 | 前端+后端 | POST /api/receipts/data-entry/act，body.action={SUBMIT、RETURN、WITHDRAW} 三动作统一（2026-09-18：I13 退回/I14 撤回语义并入本行；RETURN 退回到 assigning；7 阶段全 act 模式） | 开发中 |
 
 ### M03.F05 报告审核
