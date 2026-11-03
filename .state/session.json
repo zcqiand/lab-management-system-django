@@ -1,20 +1,16 @@
 {
   "schema": 1,
   "project": "lab-management-system-django",
-  "current_task": "REQ-2026-035 全量业务切片收官（2026-11-03）：120 op 全实现 + CT 注册 + 七后端 live 784/784，Final review C-1/I-1 已修；待人：验收签注 + 树 GA 翻转",
+  "current_task": "REQ-2026-035 全闭环（2026-11-03 人工验收通过）：120 op 上线 + GA 翻转 137 行 + CT 注册 live 784/784；无未结任务",
   "done": [
-    "REQ-2026-035 T1-T11 全落地：T1 entity DB-First 24 表 / T2 authn native-login 代理 saas IdP / T3 检测字典 28 op / T4 码表 16 op / T5 接样单 14 op / T6 样品+检测记录 12 op / T7 参数界面 8 op / T8 报告名称 14 op / T9 技术要求+计算方法 10 op / T10 汇总 2 op + _frontend-bind 占位 / T11 /health+CORS+CT 注册 django:5213",
-    "route-parity 120 op 双向零 diff（EXTRA_ROUTE_ALLOWLIST 仅 /health）；codegen.idempotent strict exit 0；gate L0-L5 全绿；rails 交叉绿",
-    "CT live 七目标 784/784 收敛（trace mode=live 70 fn；全后端共本机 lab_dev 127.0.0.1:54321；saas_dev 空库需 shared seed-db.mjs 重灌）",
-    "Final review（opus 全分支）红先修复（django 7bc8493）：C-1 码表 create 收敛 rails 裸 create（撞码 400 不再 merge/跨租户劫持，fastapi merge=在册分叉不随）+ I-1 全局 handler 补 IntegrityError→400 constraint violation；全量 117/117 + ruff + mypy strict 绿",
-    "Deferred minors ×3 在 tracker 5.136：parity 未断言 SLICE 完整性 / 四处 or True 恒真断言 / 码表 update None-skip vs rails truthy-skip",
-    "三仓已推：django 756f7f4..30cd717 / lab CT 2450ebd+7de6c2a / suite 075e3e4..3f609de（含 gitlink+tracker 5.128 勾销+5.136 收官条）"
+    "REQ-2026-035 T1-T12 全落地并上线：route-parity 120 op 零 diff / codegen 幂等 strict / gate L0-L5 绿 / rails 交叉绿 / CT 注册 django:5213 / 七后端 live 784/784（trace mode=live 70 fn）",
+    "Final review C-1/I-1 红先修复（7bc8493）：码表裸 create→400 不再跨租户劫持 + IntegrityError 全局 400",
+    "验收闭环（f155590）：REQ §5 人工验收签注 + 状态已上线；树 GA 翻转 mirror 免批（137 行 I112/F24/M1；M06.F03.I03/I04 有端点无测试锚保持开发中挂账）；suite 豁免 -django 入列（1c0dfb9）"
   ],
-  "next": "等人：①REQ-2026-035 §5 人工验收签注 ②树 GA 翻转（M04/M06 等 70 fn 开发中→GA，ADR-0042 免批前提不满足须人批：tree_change --report → 人 --approve → 状态翻转）。若人批 GA，用 python scripts/tree_change.py -p lab-management-system-django --report 起步",
+  "next": "无在途任务。候补首步：①M06.F03.I03/I04（参数 PUT/DELETE）补测试锚（有端点无 fn 锚，L5 不红但覆盖缺）②fastapi 码表 merge 分叉家族收敛批③PostToolUse 焚令 hook 静默连续三批（T9/T11/GA）排查批",
   "open_questions": [
-    "fastapi 码表 merge+租户改写与 django/rails/springboot 裸 create 语义分叉——家族统一收敛批候选（design-map 分叉条在案）",
-    "PostToolUse 树焚 hook 连续两批静默（T9/T11 手动补焚）——候排查批",
-    "CT live 落库清场义务机器化（5.133 判 CT 侧已有 cleanup-pg.ts，但 lab_test e2e-ct-* 残留通道仍有观察项）"
+    "焚令 hook 静默是否因 matcher 或 payload 反斜杠形状——排查批定谳",
+    "pre_bash_guard 不拦 cp——树保护启发式盲区，候治理批"
   ],
   "dont": [
     "不要改 .harness/stack.json 让门变松",
@@ -22,7 +18,8 @@
     "不要手写 .state/trace.json（必须 trace_cmd 产出）",
     "复合 PK 表（TR/CM/junction）禁 row.save()——只走 filter(全键).update/delete/create",
     "码表 create 已收敛裸 create→400，别把 fastapi merge 语义搬回来",
-    "测试里撞码/FK 违规的 POST 要包嵌套 transaction.atomic()+set_rollback(True)，否则 IntegrityError 毒化 pytest-django 外层事务（TransactionManagementError）",
+    "撞码/FK 违规 POST 测试必须嵌套 transaction.atomic()+set_rollback(True)（IntegrityError 毒化 pytest-django 外层事务）",
+    "树编辑只走 Edit/Write 正门——cp 不在 pre_bash_guard 拦截面，绕过去=违规（本批 f155590 实录在案）",
     "起服/runserver 需 SILENCED_SYSTEM_CHECKS=models.E026（已入 settings）+ env 全集显式导出（.env 文件 python 栈不自动加载）"
   ]
 }
