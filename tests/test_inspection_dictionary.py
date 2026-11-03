@@ -474,17 +474,6 @@ def test_parameter_list_source_type_filter_and_defaults() -> None:
     assert body["sourceType"] == "official"
     assert body["aliases"] == []
     assert body["sortOrder"] == 0
-    # aliases jsonb roundtrip（部分更新：其余字段不动）
-    resp = c.put(
-        f"/api/inspection/parameters/{par_official}",
-        {"aliases": [f"{TOKEN} 碳化值"], "unit": "mm"},
-        format="json",
-    )
-    assert resp.status_code == 200
-    body = resp.json()
-    assert body["aliases"] == [f"{TOKEN} 碳化值"]
-    assert body["unit"] == "mm"
-    assert body["name"] == f"{TOKEN} 碳化深度"
     # sourceType=custom 显式建 + 过滤（keyword 双保险唯一样本）
     assert (
         c.post(
@@ -502,11 +491,77 @@ def test_parameter_list_source_type_filter_and_defaults() -> None:
     )
     resp = c.get("/api/inspection/parameters", {"sourceType": "custom", "keyword": par_custom})
     assert [i["code"] for i in resp.json()["items"]] == [par_custom]
-    # 删除 204 → 404
-    assert c.delete(f"/api/inspection/parameters/{par_official}").status_code == 204
-    resp = c.delete(f"/api/inspection/parameters/{par_official}")
+
+
+@pytest.mark.django_db
+@pytest.mark.fn("M06.F03.I03")
+def test_parameter_update_patch_semantics_and_aliases_replace() -> None:
+    """更新参数（补锚批）：PATCH 语义——body 传入键才写；aliases 传则整体替换；
+    未传字段（name/canonicalName/sourceType）保留；unit NON_NULL 首写后键在。"""
+    code = uniq("PARU")
+    c = client()
+    assert (
+        c.post(
+            "/api/inspection/parameters",
+            {
+                "code": code,
+                "name": f"{TOKEN} 碳化深度",
+                "rawName": f"{TOKEN} 碳化深度",
+                "canonicalName": f"{TOKEN} 碳化深度",
+            },
+            format="json",
+        ).status_code
+        == 200
+    )
+    # 传 aliases → 整体替换（两条）+ unit 首写（NON_NULL：前次响应键缺）
+    resp = c.put(
+        f"/api/inspection/parameters/{code}",
+        {"aliases": [f"{TOKEN} 碳化值甲", f"{TOKEN} 碳化值乙"], "unit": "mm"},
+        format="json",
+    )
+    assert resp.status_code == 200, resp.content
+    body = resp.json()
+    assert body["aliases"] == [f"{TOKEN} 碳化值甲", f"{TOKEN} 碳化值乙"]
+    assert body["unit"] == "mm"
+    assert body["name"] == f"{TOKEN} 碳化深度"  # 未传保留
+    assert body["canonicalName"] == f"{TOKEN} 碳化深度"
+    assert body["sourceType"] == "official"  # 未传保留
+    # 再 PUT 不传 aliases → 不动；unit 改写
+    resp = c.put(f"/api/inspection/parameters/{code}", {"unit": "cm"}, format="json")
+    assert resp.status_code == 200
+    assert resp.json()["aliases"] == [f"{TOKEN} 碳化值甲", f"{TOKEN} 碳化值乙"]
+    assert resp.json()["unit"] == "cm"
+    # miss → 404
+    resp = c.put(f"/api/inspection/parameters/nope{TOKEN}", {"name": "x"}, format="json")
     assert resp.status_code == 404
     assert resp.json()["code"] == "NOT_FOUND"
+
+
+@pytest.mark.django_db
+@pytest.mark.fn("M06.F03.I04")
+def test_parameter_delete_204_then_404() -> None:
+    """删除参数（补锚批）：204 → 重复删 404（NOT_FOUND 信封），list 不再含。"""
+    code = uniq("PARD")
+    c = client()
+    assert (
+        c.post(
+            "/api/inspection/parameters",
+            {
+                "code": code,
+                "name": f"{TOKEN} 待删参数",
+                "rawName": f"{TOKEN} 待删",
+                "canonicalName": f"{TOKEN} 待删",
+            },
+            format="json",
+        ).status_code
+        == 200
+    )
+    assert c.delete(f"/api/inspection/parameters/{code}").status_code == 204
+    resp = c.delete(f"/api/inspection/parameters/{code}")
+    assert resp.status_code == 404
+    assert resp.json()["code"] == "NOT_FOUND"
+    resp = c.get("/api/inspection/parameters", {"keyword": code})
+    assert resp.json()["total"] == 0
 
 
 @pytest.mark.django_db

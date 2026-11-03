@@ -250,7 +250,7 @@
 |---|---|---|---|
 | M06.F01 | 检测专项 | InspectionSpecialty CRUD（检测能力字典根） | 已上线 |
 | M06.F02 | 检测项目 | InspectionObject CRUD + 专项/参数关联 | 已上线 |
-| M06.F03 | 检测参数 | InspectionParameter CRUD + 标准/参数关联 | 开发中 |
+| M06.F03 | 检测参数 | InspectionParameter CRUD + 标准/参数关联 | 已上线 |
 | M06.F04 | 检测标准 | InspectionStandard CRUD（含状态：active/superseded/draft） | 已上线 |
 | M06.F05 | 计算方法 | CalculationMethod 维护（复合主键，算法类型 + 公式） | 已上线 |
 | M06.F06 | 技术要求 | TechnicalRequirement 维护，按四维度匹配；brand/model/grade/spec 改为 FK 引用实体 | 已上线 |
@@ -334,8 +334,8 @@
 |---|---|---|---|---|---|
 | M06.F03.I01 | 参数列表 | 接口 | 前端+后端 | GET /api/inspection/parameters?page=&pageSize=&keyword=&sourceType=：`Page<InspectionParameter>`，按 code/name 模糊 + sourceType 过滤（official/custom） | 已上线 |
 | M06.F03.I02 | 创建参数 | 接口 | 前端+后端 | POST /api/inspection/parameters：code/name/rawName/canonicalName 必填；sourceType 默认 OFFICIAL；aliases 默认 [] | 已上线 |
-| M06.F03.I03 | 更新参数 | 接口 | 前端+后端 | PUT /api/inspection/parameters/{code}：PATCH 语义；aliases 传则整体替换 | 开发中 |
-| M06.F03.I04 | 删除参数 | 接口 | 前端+后端 | DELETE /api/inspection/parameters/{code}：204 if exists | 开发中 |
+| M06.F03.I03 | 更新参数 | 接口 | 前端+后端 | PUT /api/inspection/parameters/{code}：PATCH 语义；aliases 传则整体替换 | 已上线 |
+| M06.F03.I04 | 删除参数 | 接口 | 前端+后端 | DELETE /api/inspection/parameters/{code}：204 if exists | 已上线 |
 | M06.F03.I05 | 标准↔参数 link | 接口 | 前端+后端 | POST /api/inspection/links/standard-parameter：建立 standard→parameter 关联 | 已上线 |
 | M06.F03.I06 | 标准↔参数 unlink | 接口 | 前端+后端 | DELETE /api/inspection/links/standard-parameter：404 if 不存在 | 已上线 |
 | M06.F03.I07 | 参数↔界面 unlink | 接口 | 前端+后端 | DELETE /api/param-interfaces/links：404 if 不存在 | 已上线 |
