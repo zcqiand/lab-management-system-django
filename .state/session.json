@@ -1,15 +1,18 @@
 {
   "schema": 1,
   "project": "lab-management-system-django",
-  "current_task": "REQ-2026-035 全闭环（2026-11-03 人工验收通过）：120 op 上线 + GA 翻转 137 行 + CT 注册 live 784/784；无未结任务",
+  "current_task": "M06.F03.I03/I04 补测试锚收官（2026-11-03，ae4475a）：双 fn 锚拆分 + 三行 GA 翻转，全树 0 开发行；无未结任务",
   "done": [
     "REQ-2026-035 T1-T12 全落地并上线：route-parity 120 op 零 diff / codegen 幂等 strict / gate L0-L5 绿 / rails 交叉绿 / CT 注册 django:5213 / 七后端 live 784/784（trace mode=live 70 fn）",
     "Final review C-1/I-1 红先修复（7bc8493）：码表裸 create→400 不再跨租户劫持 + IntegrityError 全局 400",
-    "验收闭环（f155590）：REQ §5 人工验收签注 + 状态已上线；树 GA 翻转 mirror 免批（137 行 I112/F24/M1；M06.F03.I03/I04 有端点无测试锚保持开发中挂账）；suite 豁免 -django 入列（1c0dfb9）"
+    "验收闭环（f155590）：REQ §5 人工验收签注 + 状态已上线；树 GA 翻转 mirror 免批（137 行 I112/F24/M1；M06.F03.I03/I04 有端点无测试锚保持开发中挂账）；suite 豁免 -django 入列（1c0dfb9）",
+    "补锚批（ae4475a）：I03 PATCH 语义/aliases 整体替换 + I04 删除 204→404 双测试落 fn 锚（16/16 绿，trace 114 fns）；树 M06.F03.I03/I04/M06.F03 三行→已上线（mirror 免批），Write 正门单次写入字节级核验 sha 6361ae5c，hook 静默第四批已手动补焚（applied.json 3 条）"
   ],
-  "next": "无在途任务。候补首步：①M06.F03.I03/I04（参数 PUT/DELETE）补测试锚（有端点无 fn 锚，L5 不红但覆盖缺）②fastapi 码表 merge 分叉家族收敛批③PostToolUse 焚令 hook 静默连续三批（T9/T11/GA）排查批",
+  "next": "无在途任务。候补首步：①fastapi 码表 merge 分叉家族收敛批②PostToolUse 焚令 hook 静默连续四批（T9/T11/GA/补锚）排查批③pre_bash_guard cp 盲区治理批",
   "open_questions": [
-    "焚令 hook 静默是否因 matcher 或 payload 反斜杠形状——排查批定谳",
+    "gate --all（2026-11-03 晚）41/43 绿：本仓绿；e2e×2=5.30 在册豁免、CT×2=5.100 unit 降档留痕非红；唯一存量红=lab-angular（REQ-2026-031 L-T5 在途 GA 翻转未提交致 L5 UI 入口硬红，有主勿动，候人工验收）",
+    "nextjs/react/fastapi/vue/saas-springboot --all L4 红=时序假红，隔离复跑+注入面复跑均绿（527/527、217/217）；harmonyos×2 L1 codelinter 红=PATH/DEVECO_SDK_HOME 未与 gate 同调用 export（在册指纹），export 后双仓全绿——--all 恒红点，候 --all 内置 env 通道治理批",
+    "焚令 hook 静默是否因 matcher 或 payload 反斜杠形状——排查批定谳（现四批在册）",
     "pre_bash_guard 不拦 cp——树保护启发式盲区，候治理批"
   ],
   "dont": [
