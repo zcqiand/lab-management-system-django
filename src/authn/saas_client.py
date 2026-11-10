@@ -1,4 +1,4 @@
-"""saas 身份平台 HTTP 客户端 —— lab-springboot SaasAuthClient/SaasMeClient 镜像
+"""SaaS 多租户多应用身份平台 HTTP 客户端 —— lab-springboot SaasAuthClient/SaasMeClient 镜像
 （fastapi impl/saas_client.py 同源）。
 
 - SaasAuthClient：服务账号登录（POST /api/v1/auth/login）+ token 端点
